@@ -2,7 +2,6 @@ package tests
 
 import (
 	handleform "3ML/handleForm"
-	"os"
 	"testing"
 )
 
@@ -18,15 +17,8 @@ func TestProjectSetup(t *testing.T) {
 }
 
 func TestCreateForm(t *testing.T) {
-	output, err := handleform.CreateForm()
+	err := handleform.CreateForm()
 	if err != nil {
 		t.Fatalf("Cannot create form, %v", err)
-	}
-	path, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("Expected no error, got %v", err)
-	}
-	if output != ("Proj path: " + path + "\n") {
-		t.Errorf("Not the expected output, got %s", output)
 	}
 }

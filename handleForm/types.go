@@ -14,10 +14,11 @@ type Infrastructure interface {
 }
 
 type Ansible struct {
-	Enabled bool
-	Host    string
-	SSHKey  string
-	SSHUser string
+	Enabled  bool
+	HostName string
+	IPaddr   string
+	SSHKey   string
+	SSHUser  string
 }
 
 type Terraform struct {
@@ -26,11 +27,9 @@ type Terraform struct {
 }
 
 type Docker struct {
-	Enabled bool
-}
-
-type DockerCompose struct {
-	Enabled bool
+	Enabled        bool
+	DevEnabled     bool
+	ComposeEnabled bool
 }
 
 func SetupProject() (Project, error) {

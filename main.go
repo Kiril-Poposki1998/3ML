@@ -5,9 +5,9 @@ import (
 )
 
 func main() {
-	output, err := handleform.CreateForm()
+	err := handleform.CreateForm()
 	if err != nil {
 		panic(err)
 	}
-	println(output)
+	handleform.AddOptions()
 }
