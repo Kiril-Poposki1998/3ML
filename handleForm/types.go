@@ -5,12 +5,13 @@ import (
 	"os"
 )
 
-type Project struct {
-	Path string
+type Resource interface {
+	create() error
 }
 
-type Infrastructure interface {
-	createPath() error
+type Project struct {
+	Name string
+	Path string
 }
 
 type Ansible struct {

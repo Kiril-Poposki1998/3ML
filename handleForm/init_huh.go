@@ -23,6 +23,7 @@ func CreateForm() error {
 	}
 	basic_form := huh.NewForm(
 		huh.NewGroup(
+			huh.NewInput().Value(&proj.Name).Title("Name of the project"),
 			huh.NewInput().Value(&proj.Path).Placeholder(proj.Path).Title("Add project path"),
 		),
 		huh.NewGroup(
@@ -32,12 +33,12 @@ func CreateForm() error {
 		),
 	)
 	basic_form.Run()
-	fmt.Println(formatVars(proj, casc, iac))
+	fmt.Println(FormatVars(proj, casc, iac))
 	return nil
 }
 
 // Format the initial variables into a string
-func formatVars(proj Project, casc Ansible, iac Terraform) string {
+func FormatVars(proj Project, casc Ansible, iac Terraform) string {
 	return "Project path: " + proj.Path + "\n" +
 		"Ansible enabled: " + strconv.FormatBool(casc.Enabled) + "\n" +
 		"Terraform enabled: " + strconv.FormatBool(iac.Enabled) + "\n" +

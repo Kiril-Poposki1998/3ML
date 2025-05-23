@@ -16,7 +16,7 @@ func AddOptions() {
 	if docker.Enabled {
 		dockerForm()
 	}
-	fmt.Println(formatAdvancedOptionsVars())
+	fmt.Println(FormatAdvancedOptionsVars(casc, iac, docker))
 }
 
 // Terraform options
@@ -58,7 +58,7 @@ func dockerForm() {
 	provider_form.Run()
 }
 
-func formatAdvancedOptionsVars() string {
+func FormatAdvancedOptionsVars(casc Ansible, iac Terraform, docker Docker) string {
 	advancedOptions := "Advanced Options:\n"
 	if iac.Enabled {
 		advancedOptions += fmt.Sprintf("Provider: %s\n", iac.Provider)
