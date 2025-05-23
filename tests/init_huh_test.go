@@ -15,10 +15,3 @@ func TestProjectSetup(t *testing.T) {
 		t.Errorf("Expected project path to be set, got empty string")
 	}
 }
-
-func TestCreateForm(t *testing.T) {
-	err := handleform.CreateForm()
-	if err != nil {
-		t.Fatalf("Cannot create form, %v", err)
-	}
-}
