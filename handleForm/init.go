@@ -31,11 +31,7 @@ func (r *TerminalFormRunner) RunForm(proj *Project, iac *Terraform, casc *Ansibl
 
 // CreateForm initializes the project and add basic options
 func CreateForm(runner FormRunner, proj *Project, iac *Terraform, casc *Ansible, docker *Docker) error {
-	proj, err := SetupProject()
-	if err != nil {
-		return err
-	}
-	err = runner.RunForm(proj, iac, casc, docker)
+	err := runner.RunForm(proj, iac, casc, docker)
 	if err != nil {
 		return err
 	}

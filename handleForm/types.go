@@ -5,15 +5,26 @@ import (
 	"os"
 )
 
+var Getwd = os.Getwd
+
+// Every resource that is created in the project should implement this interface.
 type Resource interface {
 	create() error
 }
 
-type Project struct {
-	Name string
-	Path string
+// This is a form for each tool used in the project like ansible, terraform, docker, etc.
+type ToolForm interface {
+	RunForm() error
 }
 
+// Project represents the project structure and contains the path and name of the project.
+type Project struct {
+	Name         string
+	Path         string
+	InfraEnabled bool
+}
+
+// Ansible represents the CasC configuration for the project.
 type Ansible struct {
 	Enabled  bool
 	HostName string
@@ -22,24 +33,27 @@ type Ansible struct {
 	SSHUser  string
 }
 
+// Terraform represents the IaC configuration for the project.
 type Terraform struct {
 	Enabled  bool
 	Provider string
 }
 
+// Docker represents the containerization configuration for the project.
 type Docker struct {
 	Enabled        bool
 	DevEnabled     bool
 	ComposeEnabled bool
 }
 
-func SetupProject() (Project, error) {
-	path, err := os.Getwd()
+// Project constructor
+func SetupProject() (*Project, error) {
+	path, err := Getwd()
 	if err != nil {
-		log.Fatal(err)
-		return Project{Path: ""}, err
+		log.Printf("%v", err)
+		return &Project{Path: ""}, err
 	}
-	return Project{
+	return &Project{
 		Path: path,
 	}, nil
 }

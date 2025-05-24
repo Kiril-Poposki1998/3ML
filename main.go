@@ -13,9 +13,13 @@ var (
 
 func main() {
 	runner := &handleform.TerminalFormRunner{}
-	err := handleform.CreateForm(runner, &proj, &iac, &casc, &docker)
+	proj, err := handleform.SetupProject()
 	if err != nil {
 		panic(err)
 	}
-	handleform.AddOptions(&proj, &iac, &casc, &docker)
+	err = handleform.CreateForm(runner, proj, &iac, &casc, &docker)
+	if err != nil {
+		panic(err)
+	}
+	handleform.AddOptions(proj, &iac, &casc, &docker)
 }
