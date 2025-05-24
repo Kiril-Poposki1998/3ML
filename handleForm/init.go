@@ -21,8 +21,8 @@ func (r *TerminalFormRunner) RunForm(proj *Project, iac *Terraform, casc *Ansibl
 			huh.NewInput().Value(&proj.Path).Placeholder(proj.Path).Title("Add project path"),
 		),
 		huh.NewGroup(
-			huh.NewConfirm().Value(&casc.Enabled).Title("Do you want to use Terraform?"),
-			huh.NewConfirm().Value(&iac.Enabled).Title("Do you want to use Ansible?"),
+			huh.NewConfirm().Value(&iac.Enabled).Title("Do you want to use Terraform?"),
+			huh.NewConfirm().Value(&casc.Enabled).Title("Do you want to use Ansible?"),
 			huh.NewConfirm().Value(&docker.Enabled).Title("Do you want to use Docker?"),
 		),
 	)
