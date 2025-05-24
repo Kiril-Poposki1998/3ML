@@ -9,9 +9,11 @@ import (
 func AddOptions(proj *Project, iac *Terraform, casc *Ansible, docker *Docker) {
 	if iac.RunForm() != nil {
 		panic("IaC form failed to run")
-	} else if casc.RunForm() != nil {
+	}
+	if casc.RunForm() != nil {
 		panic("CasC form failed to run")
-	} else if docker.RunForm() != nil {
+	}
+	if docker.RunForm() != nil {
 		panic("Docker form failed to run")
 	}
 	// fmt.Println(FormatAdvancedOptionsVars(*casc, *iac, *docker))
