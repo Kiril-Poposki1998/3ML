@@ -4,10 +4,18 @@ import (
 	handleform "3ML/handleForm"
 )
 
+var (
+	proj   handleform.Project
+	casc   handleform.Ansible
+	iac    handleform.Terraform
+	docker handleform.Docker
+)
+
 func main() {
-	err := handleform.CreateForm()
+	runner := &handleform.TerminalFormRunner{}
+	err := handleform.CreateForm(runner, &proj, &iac, &casc, &docker)
 	if err != nil {
 		panic(err)
 	}
-	handleform.AddOptions()
+	handleform.AddOptions(&proj, &iac, &casc, &docker)
 }

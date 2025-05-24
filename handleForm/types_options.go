@@ -6,56 +6,63 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
-func AddOptions() {
-	if iac.Enabled {
-		iacForm()
+func AddOptions(proj *Project, iac *Terraform, casc *Ansible, docker *Docker) {
+	if iac.RunForm() != nil {
+		panic("IaC form failed to run")
+	} else if casc.RunForm() != nil {
+		panic("CasC form failed to run")
+	} else if docker.RunForm() != nil {
+		panic("Docker form failed to run")
 	}
-	if casc.Enabled {
-		cascForm()
-	}
-	if docker.Enabled {
-		dockerForm()
-	}
-	fmt.Println(FormatAdvancedOptionsVars(casc, iac, docker))
+	// fmt.Println(FormatAdvancedOptionsVars(*casc, *iac, *docker))
 }
 
 // Terraform options
-func iacForm() {
-	provider_form := huh.NewForm(
-		huh.NewGroup(
-			huh.NewSelect[string]().Title("Select a provider").Value(&iac.Provider).Options(
-				huh.NewOption("AWS", "AWS"),
-				huh.NewOption("GCP", "GCP"),
-				huh.NewOption("Azure", "Azure"),
-				huh.NewOption("Digital Ocean", "Digital Ocean"),
+func (iac *Terraform) RunForm() error {
+	if iac.Enabled {
+		provider_form := huh.NewForm(
+			huh.NewGroup(
+				huh.NewSelect[string]().Title("Select a provider").Value(&iac.Provider).Options(
+					huh.NewOption("AWS", "AWS"),
+					huh.NewOption("GCP", "GCP"),
+					huh.NewOption("Azure", "Azure"),
+					huh.NewOption("Digital Ocean", "Digital Ocean"),
+				),
 			),
-		),
-	)
-	provider_form.Run()
+		)
+		return provider_form.Run()
+	}
+	return nil
 }
 
 // Ansible options
-func cascForm() {
-	provider_form := huh.NewForm(
-		huh.NewGroup(
-			huh.NewInput().Title("Add a host").Value(&casc.HostName),
-			huh.NewInput().Title("Add an IP addr").Value(&casc.IPaddr),
-			huh.NewInput().Title("Add a SSH pub key").Value(&casc.SSHKey),
-			huh.NewInput().Title("Add a SSH user").Value(&casc.SSHUser),
-		),
-	)
-	provider_form.Run()
+func (casc *Ansible) RunForm() error {
+	if casc.Enabled {
+		provider_form := huh.NewForm(
+			huh.NewGroup(
+				huh.NewInput().Title("Add a host").Value(&casc.HostName),
+				huh.NewInput().Title("Add an IP addr").Value(&casc.IPaddr),
+				huh.NewInput().Title("Add a SSH pub key").Value(&casc.SSHKey),
+				huh.NewInput().Title("Add a SSH user").Value(&casc.SSHUser),
+			),
+		)
+		return provider_form.Run()
+	}
+	return nil
 }
 
 // Docker options
-func dockerForm() {
-	provider_form := huh.NewForm(
-		huh.NewGroup(
-			huh.NewConfirm().Title("Is there a need for a dev Dockerfile").Value(&docker.DevEnabled),
-			huh.NewConfirm().Title("Is there a need for compose file").Value(&docker.ComposeEnabled),
-		),
-	)
-	provider_form.Run()
+func (docker *Docker) RunForm() error {
+	if docker.Enabled {
+		provider_form := huh.NewForm(
+			huh.NewGroup(
+				huh.NewConfirm().Title("Is there a need for a dev Dockerfile").Value(&docker.DevEnabled),
+				huh.NewConfirm().Title("Is there a need for compose file").Value(&docker.ComposeEnabled),
+			),
+		)
+		provider_form.Run()
+	}
+	return nil
 }
 
 func FormatAdvancedOptionsVars(casc Ansible, iac Terraform, docker Docker) string {
