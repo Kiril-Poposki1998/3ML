@@ -22,4 +22,6 @@ func main() {
 		panic(err)
 	}
 	handleform.AddOptions(proj, &iac, &casc, &docker)
+	proj.Create()
+	casc.Create(*proj)
 }

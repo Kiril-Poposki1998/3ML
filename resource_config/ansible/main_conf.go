@@ -1,6 +1,6 @@
-package config
+package ansible
 
-var main = `
+var Main = `
 ---
 - name: Setup VM
   hosts: "{{ host }}"
