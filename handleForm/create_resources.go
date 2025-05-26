@@ -64,6 +64,54 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 				return fmt.Errorf("failed to write main.yaml: %w", err)
 			}
 		}
+
+		// Build the ansible configuration file
+		ansibleConf, err := template.New("ansible_conf").Parse(ansible.AnsibleConf)
+		if err != nil {
+			return fmt.Errorf("failed to parse ansible configuration template: %w", err)
+		}
+		var buf bytes.Buffer
+		err = ansibleConf.Execute(&buf, map[string]string{
+			"user":             casc.SSHUser,
+			"private_key_file": casc.SSHKey,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to execute ansible configuration template: %w", err)
+		}
+		err = os.WriteFile(casc_path+"ansible.cfg", buf.Bytes(), 0600)
+		if err != nil {
+			return fmt.Errorf("failed to write ansible.cfg: %w", err)
+		}
+
+		// Create the hosts file
+		ansibleHosts, err := template.New("ansible_hosts").Parse(ansible.AnsiblHosts)
+		if err != nil {
+			return fmt.Errorf("failed to parse ansible hosts template: %w", err)
+		}
+		var hostsBuf bytes.Buffer
+		err = ansibleHosts.Execute(&hostsBuf, map[string]string{
+			"host": casc.HostName,
+			"ip":   casc.IPaddr,
+			"user": casc.SSHUser,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to execute ansible hosts template: %w", err)
+		}
+		err = os.WriteFile(casc_path+"hosts", hostsBuf.Bytes(), 0600)
+		if err != nil {
+			return fmt.Errorf("failed to write hosts file: %w", err)
+		}
+
+		// Create the templates directory
+		err = os.Mkdir(casc_path+"templates", os.ModePerm)
+		if err != nil {
+			return fmt.Errorf("failed to create templates directory: %w", err)
+		}
+		// Copy the nginx template file
+		err = os.WriteFile(casc_path+"templates/template.conf", []byte(ansible.AnsibleNginxTemplate), 0600)
+		if err != nil {
+			return fmt.Errorf("failed to write nginx template file: %w", err)
+		}
 	}
 	return nil
 }
