@@ -24,7 +24,10 @@ func main() {
 	err = handleform.CreateForm(runner, proj, &iac, &casc, &docker)
 	check(err)
 	handleform.AddOptions(proj, &iac, &casc, &docker)
-	proj.Create()
-	casc.Create(*proj, docker)
-	iac.Create(*proj)
+	err = proj.Create()
+	check(err)
+	err = casc.Create(*proj, docker)
+	check(err)
+	err = iac.Create(*proj)
+	check(err)
 }
