@@ -2,6 +2,7 @@ package handleform
 
 import (
 	"3ML/resource_config/ansible"
+	"3ML/resource_config/docker"
 	"3ML/resource_config/terraform"
 	"bytes"
 	"fmt"
@@ -162,8 +163,15 @@ func (iac Terraform) Create(proj Project) error {
 	return nil
 }
 
-// TODO: implement create for docker
-func (d Docker) Create() error {
+// Create dockerfile, dockerfile.dev and docker compose if needed
+func (d Docker) Create(proj Project) error {
+	if d.Enabled && d.ComposeEnabled {
+		// Create docker compose file
+		err := os.WriteFile(proj.Path+"/docker-compose.yaml", []byte(docker.DockerCompose), 0600)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
