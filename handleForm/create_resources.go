@@ -2,6 +2,7 @@ package handleform
 
 import (
 	"3ML/resource_config/ansible"
+	"3ML/resource_config/terraform"
 	"bytes"
 	"fmt"
 	"os"
@@ -28,7 +29,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 	if casc.Enabled {
 		// Create Ansible directory structure
 		var casc_path = proj.Path + "/infrastructure/ansible/"
-		err := os.MkdirAll(casc_path, os.ModePerm)
+		err := os.MkdirAll(casc_path, 0600)
 		if err != nil {
 			return err
 		}
@@ -116,8 +117,48 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 	return nil
 }
 
-// TODO: Implement create for terraform
-func (iac Terraform) Create() error {
+// Create Terraform main.tf file with provider additional config
+func (iac Terraform) Create(proj Project) error {
+	if iac.Enabled {
+		// Create Terraform directory structure
+		var iac_path = proj.Path + "/infrastructure/terraform/"
+		err := os.MkdirAll(iac_path, os.ModePerm)
+		if err != nil {
+			return err
+		}
+
+		// Insert provider source and options
+		var out string
+		main, err := template.New("main").Parse(terraform.Main)
+		if err != nil {
+			return err
+		}
+		if iac.Provider == "Digital Ocean" {
+			out, err = build_terraform_tf(*main, "digitalocean/digitalocean", "digitalocean", iac.ProviderVersion, terraform.DO_Additional)
+			if err != nil {
+				return err
+			}
+		} else if iac.Provider == "AWS" {
+			out, err = build_terraform_tf(*main, "hashicorp/aws", "aws", iac.ProviderVersion, terraform.AWS_Additional)
+			if err != nil {
+				return err
+			}
+		} else if iac.Provider == "Azure" {
+			out, err = build_terraform_tf(*main, "hashicorp/azurerm", "azurerm", iac.ProviderVersion, terraform.Azure_Additional)
+			if err != nil {
+				return err
+			}
+		} else if iac.Provider == "GCP" {
+			out, err = build_terraform_tf(*main, "hashicorp/google", "google", iac.ProviderVersion, terraform.GCP_additional)
+			if err != nil {
+				return err
+			}
+		}
+		err = os.WriteFile(iac_path+"main.tf", []byte(out), 0600)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -132,6 +173,20 @@ func build_ansible_yaml(main *template.Template, host string, docker_tasks strin
 		"host":           host,
 		"DockerTasks":    docker_tasks,
 		"DockerCronJobs": docker_cronjob,
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to execute main template: %w", err)
+	}
+	return buf.String(), nil
+}
+
+func build_terraform_tf(main template.Template, provider_source string, provider_name string, version string, additional_info string) (string, error) {
+	var buf bytes.Buffer
+	err := main.Execute(&buf, map[string]string{
+		"provider_name":    provider_name,
+		"remote_repo":      provider_source,
+		"provider_version": version,
+		"additional_info":  additional_info,
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to execute main template: %w", err)

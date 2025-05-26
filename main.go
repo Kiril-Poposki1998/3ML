@@ -11,17 +11,20 @@ var (
 	docker handleform.Docker
 )
 
+func check(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
 	runner := &handleform.TerminalFormRunner{}
 	proj, err := handleform.SetupProject()
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 	err = handleform.CreateForm(runner, proj, &iac, &casc, &docker)
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 	handleform.AddOptions(proj, &iac, &casc, &docker)
 	proj.Create()
 	casc.Create(*proj, docker)
+	iac.Create(*proj)
 }
