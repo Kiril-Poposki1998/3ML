@@ -35,8 +35,9 @@ type Ansible struct {
 
 // Terraform represents the IaC configuration for the project.
 type Terraform struct {
-	Enabled  bool
-	Provider string
+	Enabled         bool
+	Provider        string
+	ProviderVersion string
 }
 
 // Docker represents the containerization configuration for the project.

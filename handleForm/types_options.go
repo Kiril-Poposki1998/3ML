@@ -30,6 +30,7 @@ func (iac *Terraform) RunForm() error {
 					huh.NewOption("Azure", "Azure"),
 					huh.NewOption("Digital Ocean", "Digital Ocean"),
 				),
+				huh.NewInput().Title("Provider version").Value(&iac.ProviderVersion),
 			),
 		)
 		return provider_form.Run()
