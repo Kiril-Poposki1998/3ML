@@ -61,6 +61,11 @@ func (docker *Docker) RunForm() error {
 			huh.NewGroup(
 				huh.NewConfirm().Title("Is there a need for a dev Dockerfile").Value(&docker.DevEnabled),
 				huh.NewConfirm().Title("Is there a need for compose file").Value(&docker.ComposeEnabled),
+				huh.NewConfirm().Title("Is there a need for a database").Value(&docker.DatabaseEnabled),
+				huh.NewSelect[string]().Title("Select a database type").Value(&docker.Databasetype).Options(
+					huh.NewOption("PostgreSQL", "PostgreSQL"),
+					huh.NewOption("MySQL", "MySQL"),
+				),
 			),
 		)
 		provider_form.Run()
