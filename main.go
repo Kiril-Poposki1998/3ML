@@ -18,12 +18,12 @@ func check(err error) {
 }
 
 func main() {
-	// Create project
+	// Create project form
 	runner := &handleform.TerminalFormRunner{}
 	proj, err := handleform.SetupProject()
 	check(err)
 
-	// Run forms
+	// Run forms for configuring elements
 	err = handleform.CreateForm(runner, proj, &iac, &casc, &docker)
 	check(err)
 	handleform.AddOptions(proj, &iac, &casc, &docker)
