@@ -12,7 +12,7 @@ import (
 
 // Create project directory structure and infrastructure if enabled.
 func (p Project) Create() error {
-	err := os.Mkdir(p.Path, os.ModePerm)
+	err := os.MkdirAll(p.Path, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -165,14 +165,37 @@ func (iac Terraform) Create(proj Project) error {
 
 // Create dockerfile, dockerfile.dev and docker compose if needed
 func (d Docker) Create(proj Project) error {
-	if d.Enabled && d.ComposeEnabled {
-		// Create docker compose file
-		err := os.WriteFile(proj.Path+"/docker-compose.yaml", []byte(docker.DockerCompose), 0600)
-		if err != nil {
-			return err
-		}
+	dockercompose_template, err := template.New("docker_compose").Parse(docker.DockerCompose)
+	if err != nil {
+		return fmt.Errorf("failed to parse docker compose template: %w", err)
+	}
+
+	// Run docker compose template
+	dockerComposeContent, err := build_dockerfile(dockercompose_template, d.DatabaseEnabled, d.Databasetype)
+	if err != nil {
+		return fmt.Errorf("failed to build docker compose file: %w", err)
+	}
+
+	// Create docker compose file
+	err = os.WriteFile(proj.Path+"/docker-compose.yaml", []byte(dockerComposeContent), 0600)
+	if err != nil {
+		return err
 	}
 	return nil
+}
+
+func build_dockerfile(main *template.Template, databaseEnabled bool, databaseType string) (string, error) {
+	var buf bytes.Buffer
+	err := main.Execute(&buf, map[string]interface{}{
+		"DatabaseEnabled": databaseEnabled,
+		"Databasetype":    databaseType,
+		"Postgresql":      docker.PostgresqlDockerCompose,
+		"Mysql":           docker.MysqlDockerCompose,
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to execute main template: %w", err)
+	}
+	return buf.String(), nil
 }
 
 func build_ansible_yaml(main *template.Template, host string, docker_tasks string, docker_cronjob string) (string, error) {

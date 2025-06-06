@@ -35,4 +35,6 @@ func main() {
 	check(err)
 	err = iac.Create(*proj)
 	check(err)
+	err = docker.Create(*proj)
+	check(err)
 }
