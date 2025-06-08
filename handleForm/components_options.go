@@ -56,20 +56,41 @@ func (casc *Ansible) RunForm() error {
 
 // Docker options
 func (docker *Docker) RunForm() error {
-	if docker.Enabled {
-		provider_form := huh.NewForm(
-			huh.NewGroup(
-				huh.NewConfirm().Title("Is there a need for a dev Dockerfile").Value(&docker.DevEnabled),
-				huh.NewConfirm().Title("Is there a need for compose file").Value(&docker.ComposeEnabled),
-				huh.NewConfirm().Title("Is there a need for a database").Value(&docker.DatabaseEnabled),
-				huh.NewSelect[string]().Title("Select a database type").Value(&docker.Databasetype).Options(
-					huh.NewOption("PostgreSQL", "PostgreSQL"),
-					huh.NewOption("MySQL", "MySQL"),
-				),
-			),
-		)
-		provider_form.Run()
+	if !docker.Enabled {
+		return nil
 	}
+	// TODO Implement Dockerfile logic
+	provider_form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewConfirm().Title("Is there a need for compose file").Value(&docker.ComposeEnabled),
+		),
+	)
+	provider_form.Run()
+
+	// Form for database options
+	if !docker.ComposeEnabled {
+		return nil
+	}
+	provider_form = huh.NewForm(
+		huh.NewGroup(
+			huh.NewConfirm().Title("Is there a need for a database").Value(&docker.DatabaseEnabled),
+		),
+	)
+	provider_form.Run()
+
+	// Form for which database to use
+	if !docker.DatabaseEnabled {
+		return nil
+	}
+	provider_form = huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().Title("Select a database type").Value(&docker.Databasetype).Options(
+				huh.NewOption("PostgreSQL", "PostgreSQL"),
+				huh.NewOption("MySQL", "MySQL"),
+			),
+		),
+	)
+	provider_form.Run()
 	return nil
 }
 
@@ -85,7 +106,6 @@ func FormatAdvancedOptionsVars(casc Ansible, iac Terraform, docker Docker) strin
 		advancedOptions += fmt.Sprintf("SSHUser: %s\n", casc.SSHUser)
 	}
 	if docker.Enabled {
-		advancedOptions += fmt.Sprintf("DevEnabled: %t\n", docker.DevEnabled)
 		advancedOptions += fmt.Sprintf("ComposeEnabled: %t\n", docker.ComposeEnabled)
 	}
 	return advancedOptions

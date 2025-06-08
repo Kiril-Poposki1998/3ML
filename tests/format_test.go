@@ -42,7 +42,6 @@ func TestAdvancedFormat(t *testing.T) {
 	}
 	docker := handleform.Docker{
 		Enabled:        true,
-		DevEnabled:     true,
 		ComposeEnabled: true,
 	}
 	expected := "Advanced Options:\n" +
