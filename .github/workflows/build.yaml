@@ -21,6 +21,23 @@ jobs:
 
       - name: Build 3ml
         run: go build -o 3ml .
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      actions: write
+      checks: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+            go-version: '1.23.9'
       
       - name: Run tests
         run: go test -v ./... -coverprofile=coverage.txt

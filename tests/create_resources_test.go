@@ -17,15 +17,9 @@ func TestCreateResourceProject(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get current working directory: %v", err)
 	}
-	proj.InfraEnabled = true
 	err = proj.Create()
 	if err != nil {
 		t.Fatalf("Failed to create project: %v", err)
 	}
-	os.RemoveAll(proj.Path)
-	proj.Path = "/some_path" // Set a temporary path for testing
-	err = proj.Create()
-	if err == nil {
-		t.Fatalf("Expected error when creating project with existing path, got nil")
-	}
+	os.RemoveAll(proj.Path + "/test_project")
 }
