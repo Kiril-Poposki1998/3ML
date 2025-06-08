@@ -9,6 +9,7 @@ var (
 	casc   handleform.Ansible
 	iac    handleform.Terraform
 	docker handleform.Docker
+	cicd   handleform.CICD
 )
 
 func check(err error) {
@@ -26,7 +27,7 @@ func main() {
 	// Run forms for configuring elements
 	err = handleform.CreateForm(runner, proj, &iac, &casc, &docker)
 	check(err)
-	handleform.AddOptions(proj, &iac, &casc, &docker)
+	handleform.AddOptions(proj, &iac, &casc, &docker, &cicd)
 
 	// Create resources
 	err = proj.Create()
@@ -36,5 +37,7 @@ func main() {
 	err = iac.Create(*proj)
 	check(err)
 	err = docker.Create(*proj)
+	check(err)
+	err = cicd.Create(*proj, casc)
 	check(err)
 }

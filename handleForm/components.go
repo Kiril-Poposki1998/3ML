@@ -48,6 +48,10 @@ type Docker struct {
 	Databasetype    string
 }
 
+type CICD struct {
+	Enabled bool
+}
+
 // Project constructor
 func SetupProject() (*Project, error) {
 	path, err := Getwd()

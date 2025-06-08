@@ -2,6 +2,7 @@ package handleform
 
 import (
 	"3ML/resource_config/ansible"
+	"3ML/resource_config/cicd/github"
 	"3ML/resource_config/docker"
 	"3ML/resource_config/terraform"
 	"bytes"
@@ -182,6 +183,49 @@ func (d Docker) Create(proj Project) error {
 		return err
 	}
 	return nil
+}
+
+// Create CI/CD files
+func (cicd CICD) Create(proj Project, casc Ansible) error {
+	if cicd.Enabled {
+		// Create the .github/workflows directory
+		err := os.MkdirAll(proj.Path+"/.github/workflows", 0600)
+		if err != nil {
+			return fmt.Errorf("failed to create .github/workflows directory: %w", err)
+		}
+
+		// Get the main template
+		main, err := template.New("main").Parse(github.Template)
+		if err != nil {
+			return fmt.Errorf("failed to parse main template: %w", err)
+		}
+
+		// Build the content of the GitHub Actions workflow file
+		out, err := build_github_workflow(main, proj.Name, casc.HostName, casc.IPaddr)
+		if err != nil {
+			return fmt.Errorf("failed to build GitHub Actions workflow: %w", err)
+		}
+
+		// Write the workflow file
+		err = os.WriteFile(proj.Path+"/.github/workflows/deploy.yaml", []byte(out), 0600)
+		if err != nil {
+			return fmt.Errorf("failed to write deploy.yaml: %w", err)
+		}
+	}
+	return nil
+}
+
+func build_github_workflow(main *template.Template, projectName string, sshName string, ipAddress string) (string, error) {
+	var buf bytes.Buffer
+	err := main.Execute(&buf, map[string]string{
+		"ProjectName": projectName,
+		"SSHName":     sshName,
+		"IPaddress":   ipAddress,
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to execute main template: %w", err)
+	}
+	return buf.String(), nil
 }
 
 func build_dockerfile(main *template.Template, databaseEnabled bool, databaseType string) (string, error) {

@@ -6,7 +6,7 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
-func AddOptions(proj *Project, iac *Terraform, casc *Ansible, docker *Docker) {
+func AddOptions(proj *Project, iac *Terraform, casc *Ansible, docker *Docker, cicd *CICD) {
 	if iac.RunForm() != nil {
 		panic("IaC form failed to run")
 	}
@@ -15,6 +15,9 @@ func AddOptions(proj *Project, iac *Terraform, casc *Ansible, docker *Docker) {
 	}
 	if docker.RunForm() != nil {
 		panic("Docker form failed to run")
+	}
+	if cicd.RunForm() != nil {
+		panic("CICD form failed to run")
 	}
 	// fmt.Println(FormatAdvancedOptionsVars(*casc, *iac, *docker))
 }
@@ -91,6 +94,19 @@ func (docker *Docker) RunForm() error {
 		),
 	)
 	provider_form.Run()
+	return nil
+}
+
+// CI/CD options
+func (cicd *CICD) RunForm() error {
+	if cicd.Enabled {
+		provider_form := huh.NewForm(
+			huh.NewGroup(
+				huh.NewConfirm().Title("Is there a need for CI/CD?").Value(&cicd.Enabled),
+			),
+		)
+		return provider_form.Run()
+	}
 	return nil
 }
 
