@@ -5,7 +5,7 @@
 
 <p align="center">
 <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Kiril-Poposki1998/3ML/build.yaml">
-<a href="https://github.com/Kiril-Poposki1998/3ML/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache%20License%202.0-E91E63.svg?style=flat-square" /></a>
+<a href="https://github.com/Kiril-Poposki1998/3ML/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPLv3-blue.svg" /></a>
 <img alt="GitHub Tag" src="https://img.shields.io/github/v/tag/Kiril-Poposki1998/3ML">
 <img alt="Codecov" src="https://img.shields.io/codecov/c/github/Kiril-Poposki1998/3ML">
 </p>
