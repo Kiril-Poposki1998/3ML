@@ -1,0 +1,23 @@
+name: "Build 3ml"
+
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+    # Setup go
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+            go-version: '1.23.9'
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Build 3ml
+        run: go build -o 3ml .
