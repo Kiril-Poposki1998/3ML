@@ -7,11 +7,11 @@ import (
 )
 
 type MockFormRunner struct {
-	RunFunc func(proj *handleform.Project, iac *handleform.Terraform, casc *handleform.Ansible, docker *handleform.Docker) error
+	RunFunc func(proj *handleform.Project, iac *handleform.Terraform, casc *handleform.Ansible, docker *handleform.Docker, cicd *handleform.CICD) error
 }
 
-func (m *MockFormRunner) RunForm(proj *handleform.Project, iac *handleform.Terraform, casc *handleform.Ansible, docker *handleform.Docker) error {
-	return m.RunFunc(proj, iac, casc, docker)
+func (m *MockFormRunner) RunForm(proj *handleform.Project, iac *handleform.Terraform, casc *handleform.Ansible, docker *handleform.Docker, cicd *handleform.CICD) error {
+	return m.RunFunc(proj, iac, casc, docker, cicd)
 }
 
 func TestProjectSetup(t *testing.T) {
@@ -53,20 +53,22 @@ func TestCreateForm_Success(t *testing.T) {
 	iac := &handleform.Terraform{}
 	casc := &handleform.Ansible{}
 	docker := &handleform.Docker{}
+	cicd := &handleform.CICD{}
 
 	runner := &MockFormRunner{
-		RunFunc: func(p *handleform.Project, i *handleform.Terraform, c *handleform.Ansible, d *handleform.Docker) error {
+		RunFunc: func(p *handleform.Project, i *handleform.Terraform, c *handleform.Ansible, d *handleform.Docker, cicd *handleform.CICD) error {
 			// simulate form interaction
 			p.Name = "TestProject"
 			p.Path = "/mock/path"
 			c.Enabled = true
 			i.Enabled = false
 			d.Enabled = true
+			cicd.Enabled = true
 			return nil
 		},
 	}
 
-	err := handleform.CreateForm(runner, proj, iac, casc, docker)
+	err := handleform.CreateForm(runner, proj, iac, casc, docker, cicd)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}

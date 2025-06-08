@@ -11,10 +11,10 @@ type TerminalFormRunner struct{}
 
 // Interface for running forms
 type FormRunner interface {
-	RunForm(proj *Project, iac *Terraform, casc *Ansible, docker *Docker) error
+	RunForm(proj *Project, iac *Terraform, casc *Ansible, docker *Docker, cicd *CICD) error
 }
 
-func (r *TerminalFormRunner) RunForm(proj *Project, iac *Terraform, casc *Ansible, docker *Docker) error {
+func (r *TerminalFormRunner) RunForm(proj *Project, iac *Terraform, casc *Ansible, docker *Docker, cicd *CICD) error {
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().Value(&proj.Name).Title("Name of the project"),
@@ -24,14 +24,15 @@ func (r *TerminalFormRunner) RunForm(proj *Project, iac *Terraform, casc *Ansibl
 			huh.NewConfirm().Value(&iac.Enabled).Title("Do you want to use Terraform?"),
 			huh.NewConfirm().Value(&casc.Enabled).Title("Do you want to use Ansible?"),
 			huh.NewConfirm().Value(&docker.Enabled).Title("Do you want to use Docker?"),
+			huh.NewConfirm().Title("Is there a need for CI/CD?").Value(&cicd.Enabled),
 		),
 	)
 	return form.Run()
 }
 
 // CreateForm initializes the project and add basic options
-func CreateForm(runner FormRunner, proj *Project, iac *Terraform, casc *Ansible, docker *Docker) error {
-	err := runner.RunForm(proj, iac, casc, docker)
+func CreateForm(runner FormRunner, proj *Project, iac *Terraform, casc *Ansible, docker *Docker, cicd *CICD) error {
+	err := runner.RunForm(proj, iac, casc, docker, cicd)
 	if err != nil {
 		return err
 	}
@@ -40,9 +41,10 @@ func CreateForm(runner FormRunner, proj *Project, iac *Terraform, casc *Ansible,
 }
 
 // Format the initial variables into a string
-func FormatVars(proj *Project, casc *Ansible, iac *Terraform, docker *Docker) string {
+func FormatVars(proj *Project, casc *Ansible, iac *Terraform, docker *Docker, cicd *CICD) string {
 	return "Project path: " + proj.Path + "\n" +
 		"Ansible enabled: " + strconv.FormatBool(casc.Enabled) + "\n" +
 		"Terraform enabled: " + strconv.FormatBool(iac.Enabled) + "\n" +
-		"Docker enabled: " + strconv.FormatBool(docker.Enabled) + "\n"
+		"Docker enabled: " + strconv.FormatBool(docker.Enabled) + "\n" +
+		"CICD enabled: " + strconv.FormatBool(cicd.Enabled) + "\n"
 }

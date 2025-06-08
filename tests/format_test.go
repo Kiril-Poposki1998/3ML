@@ -18,11 +18,15 @@ func TestInitFormat(t *testing.T) {
 	docker := handleform.Docker{
 		Enabled: true,
 	}
+	cicd := handleform.CICD{
+		Enabled: true,
+	}
 	expected := "Project path: \n" +
 		"Ansible enabled: true\n" +
 		"Terraform enabled: true\n" +
-		"Docker enabled: true\n"
-	result := handleform.FormatVars(&proj, &casc, &iac, &docker)
+		"Docker enabled: true\n" +
+		"CICD enabled: true\n"
+	result := handleform.FormatVars(&proj, &casc, &iac, &docker, &cicd)
 	if result != expected {
 		t.Errorf("Expected %q, but got %q", expected, result)
 	}

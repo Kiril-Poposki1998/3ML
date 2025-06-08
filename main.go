@@ -25,7 +25,7 @@ func main() {
 	check(err)
 
 	// Run forms for configuring elements
-	err = handleform.CreateForm(runner, proj, &iac, &casc, &docker)
+	err = handleform.CreateForm(runner, proj, &iac, &casc, &docker, &cicd)
 	check(err)
 	handleform.AddOptions(proj, &iac, &casc, &docker, &cicd)
 

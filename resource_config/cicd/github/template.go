@@ -3,12 +3,10 @@ package github
 var Template = `
 name: "Deployment of {{ .ProjectName }}"
 
-
 on:
   push:
     branches:
       - main
-
 
 jobs:
   deploy:
@@ -18,7 +16,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup ssh
-        run: mkdir -p ~/.ssh/ && echo "${{ secrets.SSH_CONFIG }}" > ~/.ssh/config && echo "${{ secrets.SSH_RUNNER_KEY }}" > ~/.ssh/runner_key && chmod 600 ~/.ssh/runner_key && ssh-keyscan -H {{ .IPaddress }} >> ~/.ssh/known_hosts
+        run: mkdir -p ~/.ssh/ && echo "{{"{{"}} secrets.SSH_CONFIG {{"}}"}}" > ~/.ssh/config && echo "{{"{{"}} secrets.SSH_RUNNER_KEY {{"}}"}}" > ~/.ssh/runner_key && chmod 600 ~/.ssh/runner_key && ssh-keyscan -H {{ .IPAddress }} >> ~/.ssh/known_hosts
 
       - name: Install rsync
         run: sudo apt-get update && sudo apt-get install rsync -y
@@ -49,7 +47,7 @@ jobs:
       - name: Notify Discord
         uses: Ilshidur/action-discord@0.3.2
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK: {{ "{{" }} secrets.DISCORD_WEBHOOK_URL {{ "}}" }}
         with:
-          args: "STATUS:${{ needs.deploy.result }} Actions for project ${{ github.repository }} on branch main"
+          args: "STATUS:{{"{{"}} needs.deploy.result {{"}}"}} Actions for project {{"{{"}} github.repository {{"}}"}} on branch main"
 `

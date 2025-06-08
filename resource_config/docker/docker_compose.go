@@ -4,7 +4,7 @@ var DockerCompose = `
 services:
   app1:	
     build: .
-  	container_name: app1
+    container_name: app1
     env_file:
       - .env
     ports:

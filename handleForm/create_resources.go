@@ -18,7 +18,7 @@ func (p Project) Create() error {
 		return err
 	}
 	if p.InfraEnabled {
-		err = os.Mkdir(p.Path+"/infrastructure", os.ModePerm)
+		err = os.MkdirAll(p.Path+"/infrastructure", os.ModePerm)
 		if err != nil {
 			return err
 		}
@@ -106,7 +106,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 		}
 
 		// Create the templates directory
-		err = os.Mkdir(casc_path+"templates", os.ModePerm)
+		err = os.MkdirAll(casc_path+"templates", os.ModePerm)
 		if err != nil {
 			return fmt.Errorf("failed to create templates directory: %w", err)
 		}
@@ -189,7 +189,7 @@ func (d Docker) Create(proj Project) error {
 func (cicd CICD) Create(proj Project, casc Ansible) error {
 	if cicd.Enabled {
 		// Create the .github/workflows directory
-		err := os.MkdirAll(proj.Path+"/.github/workflows", 0600)
+		err := os.MkdirAll(proj.Path+"/.github/workflows", 0700)
 		if err != nil {
 			return fmt.Errorf("failed to create .github/workflows directory: %w", err)
 		}
