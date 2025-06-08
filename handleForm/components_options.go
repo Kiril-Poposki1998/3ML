@@ -110,7 +110,7 @@ func (docker *Docker) RunForm() error {
 // 	return nil
 // }
 
-func FormatAdvancedOptionsVars(casc Ansible, iac Terraform, docker Docker) string {
+func FormatAdvancedOptionsVars(casc Ansible, iac Terraform, docker Docker, cicd CICD) string {
 	advancedOptions := "Advanced Options:\n"
 	if iac.Enabled {
 		advancedOptions += fmt.Sprintf("Provider: %s\n", iac.Provider)
@@ -123,6 +123,9 @@ func FormatAdvancedOptionsVars(casc Ansible, iac Terraform, docker Docker) strin
 	}
 	if docker.Enabled {
 		advancedOptions += fmt.Sprintf("ComposeEnabled: %t\n", docker.ComposeEnabled)
+	}
+	if cicd.Enabled {
+		advancedOptions += fmt.Sprintf("CICD enabled: %t\n", cicd.Enabled)
 	}
 	return advancedOptions
 }

@@ -48,15 +48,18 @@ func TestAdvancedFormat(t *testing.T) {
 		Enabled:        true,
 		ComposeEnabled: true,
 	}
+	cicd := handleform.CICD{
+		Enabled: true,
+	}
 	expected := "Advanced Options:\n" +
 		"Provider: AWS\n" +
 		"HostName: test-host\n" +
 		"IPaddr: 192.168.0.1\n" +
 		"SSHKey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC...\n" +
 		"SSHUser: test-user\n" +
-		"DevEnabled: true\n" +
-		"ComposeEnabled: true\n"
-	result := handleform.FormatAdvancedOptionsVars(casc, iac, docker)
+		"ComposeEnabled: true\n" +
+		"CICD enabled: true\n"
+	result := handleform.FormatAdvancedOptionsVars(casc, iac, docker, cicd)
 	if result != expected {
 		t.Errorf("Expected %q, but got %q", expected, result)
 	}

@@ -21,3 +21,11 @@ jobs:
 
       - name: Build 3ml
         run: go build -o 3ml .
+      
+      - name: Run tests
+        run: go test -v ./... -coverprofile=coverage.txt
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.txt
