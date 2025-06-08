@@ -3,19 +3,13 @@ package docker
 var DockerCompose = `
 services:
   app1:	
-  	build: .
-  	container_name: service-a 
-  	env_file:
-	  - .env
-  	ports:
-	  - "127.0.0.1:8000:8000"
-  	healthcheck:
-	  test: ["CMD", "curl", "http://localhost:8000"]
-	  interval: 5s
-	  timeout: 5s
-	  retries: 5
-	  start_period: 5s
-  	restart: always
+    build: .
+  	container_name: app1
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:8000:8000"
+    restart: always
 	{{ if .DatabaseEnabled }}
 		{{ if eq .Databasetype "PostgreSQL" }}
 		 	{{ .Postgresql }}
@@ -27,15 +21,15 @@ services:
 
 var PostgresqlDockerCompose = `
   database:
-	image: postgres:latest
-	container_name: postgres
-	env_file:
-	  - .env
-	volumes:
-	  - postgres_data:/var/lib/postgresql/data
-	ports:
-	  - "127.0.1:5432:5432"
-	restart: on-failure
+    image: postgres:latest
+    container_name: postgres
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.1:5432:5432"
+    restart: on-failure
 
 volumes:
   mysql_data:		
@@ -43,15 +37,15 @@ volumes:
 
 var MysqlDockerCompose = `
   database:
-  	image: mysql:latest
-  	container_name: mysql
-  	env_file:
-  	  - .env
-  	volumes:
-  	  - mysql_data:/var/lib/mysql
-  	ports:
-  	  - "127.0.1:3306:3306"
-  	restart: on-failure
+    image: mysql:latest
+    container_name: mysql
+    env_file:
+      - .env
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+	  - "127.0.1:3306:3306"
+	restart: on-failure
 
 volumes:
   mysql_data:
