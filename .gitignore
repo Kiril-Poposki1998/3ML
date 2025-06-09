@@ -1,2 +1,3 @@
 coverage.out
 build
+tests/test_project/
