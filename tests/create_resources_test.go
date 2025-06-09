@@ -43,12 +43,25 @@ func TestCreateResourceAnsible(t *testing.T) {
 	ansibleConfig := handleform.Ansible{
 		Enabled:  true,
 		HostName: "localhost",
+		IPaddr:   "192.168.0.1",
+		SSHKey:   "ssh_key.pem",
+		SSHUser:  "user",
 	}
 	err = ansibleConfig.Create(*proj, handleform.Docker{Enabled: true})
 	if err != nil {
 		t.Fatalf("Failed to create Ansible resources: %v", err)
 	}
 
+	err = ansibleConfig.Create(*proj, handleform.Docker{Enabled: false})
+	if err != nil {
+		t.Fatalf("Failed to create Ansible resources: %v", err)
+	}
+
+	proj.Path = "/"
+	err = ansibleConfig.Create(*proj, handleform.Docker{Enabled: false})
+	if err == nil {
+		t.Fatal("Function did not error out")
+	}
 	os.RemoveAll(proj.Path + "/test_project")
 }
 
