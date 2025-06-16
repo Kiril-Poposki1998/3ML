@@ -44,6 +44,25 @@ var Main = `
       become: yes
       cron: minute="0" hour="8" weekday="1" job="/usr/bin/certbot -q renew --nginx && systemctl restart nginx" state=present name=renew_certs
 
+    {{ if .AlertsEnabled }}
+    - name: Ensure alert scripts are present
+      block:
+        - name: Copy check port script
+          copy:
+            src: ./templates/check_port.sh
+            dest: /root/check_port.sh
+            owner: root
+            group: root
+            mode: '0755'
+        - name: Copy check disk space script
+          copy:
+            src: ./templates/check_disk_space.sh
+            dest: /root/check_disk_space.sh
+            owner: root
+            group: root
+            mode: '0755'
+    {{ end }}
+
     {{ .DockerCronJobs }}
 
 `

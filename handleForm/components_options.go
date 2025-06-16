@@ -52,7 +52,19 @@ func (casc *Ansible) RunForm() error {
 				huh.NewInput().Title("Add a SSH user").Value(&casc.SSHUser),
 			),
 		)
-		return provider_form.Run()
+		err := provider_form.Run()
+		if err != nil {
+			return fmt.Errorf("failed to run Ansible form: %w", err)
+		}
+		alerts_form := huh.NewForm(
+			huh.NewGroup(
+				huh.NewConfirm().Title("Enable alerts?").Value(&casc.AlertsEnabled),
+			),
+		)
+		err = alerts_form.Run()
+		if err != nil {
+			return fmt.Errorf("failed to run alerts form: %w", err)
+		}
 	}
 	return nil
 }

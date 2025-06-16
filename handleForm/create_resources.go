@@ -45,7 +45,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 		// Write docker installation and cronjobs in main.yaml
 		if docker.Enabled {
 			// Build the ansible yaml content
-			out, err := build_ansible_yaml(main, casc.HostName, ansible.AnsibleDocker, ansible.DockerCronJobs)
+			out, err := build_ansible_yaml(main, casc.HostName, ansible.AnsibleDocker, ansible.DockerCronJobs, casc.AlertsEnabled)
 			if err != nil {
 				return fmt.Errorf("failed to build ansible yaml: %w", err)
 			}
@@ -58,7 +58,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 
 		} else {
 			// Write main.yaml to the project directory
-			out, err := build_ansible_yaml(main, casc.HostName, "", "")
+			out, err := build_ansible_yaml(main, casc.HostName, "", "", casc.AlertsEnabled)
 			if err != nil {
 				return fmt.Errorf("failed to build ansible yaml: %w", err)
 			}
@@ -242,12 +242,13 @@ func build_dockerfile(main *template.Template, databaseEnabled bool, databaseTyp
 	return buf.String(), nil
 }
 
-func build_ansible_yaml(main *template.Template, host string, docker_tasks string, docker_cronjob string) (string, error) {
+func build_ansible_yaml(main *template.Template, host string, docker_tasks string, docker_cronjob string, alerts bool) (string, error) {
 	var buf bytes.Buffer
-	err := main.Execute(&buf, map[string]string{
+	err := main.Execute(&buf, map[string]interface{}{
 		"host":           host,
 		"DockerTasks":    docker_tasks,
 		"DockerCronJobs": docker_cronjob,
+		"AlertsEnabled":  alerts,
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to execute main template: %w", err)

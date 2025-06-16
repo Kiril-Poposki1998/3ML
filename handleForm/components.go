@@ -26,11 +26,12 @@ type Project struct {
 
 // Ansible represents the CasC configuration for the project.
 type Ansible struct {
-	Enabled  bool
-	HostName string
-	IPaddr   string
-	SSHKey   string
-	SSHUser  string
+	Enabled       bool
+	HostName      string
+	IPaddr        string
+	SSHKey        string
+	SSHUser       string
+	AlertsEnabled bool
 }
 
 // Terraform represents the IaC configuration for the project.
