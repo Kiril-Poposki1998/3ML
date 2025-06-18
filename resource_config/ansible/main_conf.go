@@ -18,6 +18,7 @@ var Main = `
         name:
           - nginx
           - python3-certbot-nginx
+          - curl
 
     - name: Copy nginx setting
       become: yes
