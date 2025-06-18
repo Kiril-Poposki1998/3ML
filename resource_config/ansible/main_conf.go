@@ -6,7 +6,7 @@ var Main = `
   hosts: "{{ .host }}"
 
   tasks:
-    {{ .DockerTasks }}
+    {{- .DockerTasks -}}
     - name: Update APT cache
       become: yes
       ansible.builtin.apt:
@@ -45,7 +45,7 @@ var Main = `
       become: yes
       cron: minute="0" hour="8" weekday="1" job="/usr/bin/certbot -q renew --nginx && systemctl restart nginx" state=present name=renew_certs
 
-    {{ if .AlertsEnabled }}
+    {{- if .AlertsEnabled -}}
     - name: Ensure alert scripts are present
       block:
         - name: Copy check port script
@@ -62,10 +62,8 @@ var Main = `
             owner: root
             group: root
             mode: '0755'
-    {{ end }}
-
-    {{ .DockerCronJobs }}
-
+    {{- end -}}
+    {{- .DockerCronJobs -}}
 `
 
 var DockerCronJobs = `- name: Delete docker images

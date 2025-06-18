@@ -1,19 +1,16 @@
 package ansible
 
-var AnsibleConf = `
-[defaults]
+var AnsibleConf = `[defaults]
 inventory = hosts
 remote_user = {{ .user }}
 private_key_file = ~/.ssh/{{ .private_key_file }}
 `
 
-var AnsiblHosts = `
-[{{ .host }}]
+var AnsiblHosts = `[{{ .host }}]
 {{ .host }} ansible_host={{ .ip }} ansible_connection=ssh
 `
 
-var AnsibleNginxTemplate = `
-server {
+var AnsibleNginxTemplate = `server {
 	listen 80;
 	server_name _;
 
@@ -22,8 +19,7 @@ server {
 	}
 }
 `
-var CheckPortScript = `
-#!/bin/bash
+var CheckPortScript = `#!/bin/bash
 
 # Configuration
 URL=$1
@@ -45,8 +41,7 @@ if [ $? -ne 0 ]; then
 fi
 `
 
-var CheckDiskSpaceScript = `
-#!/bin/bash
+var CheckDiskSpaceScript = `#!/bin/bash
 
 # Configuration
 WEBHOOK_URL=$2

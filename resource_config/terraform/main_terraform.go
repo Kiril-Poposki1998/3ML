@@ -10,7 +10,7 @@ terraform {
   }
 }
 
-{{ .additional_info }}
+{{- .additional_info -}}
 `
 
 var DO_Additional = `
