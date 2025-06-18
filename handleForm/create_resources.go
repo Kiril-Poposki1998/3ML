@@ -220,7 +220,7 @@ func build_github_workflow(main *template.Template, projectName string, sshName 
 	err := main.Execute(&buf, map[string]string{
 		"ProjectName": projectName,
 		"SSHName":     sshName,
-		"IPaddress":   ipAddress,
+		"IPAddress":   ipAddress,
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to execute main template: %w", err)
