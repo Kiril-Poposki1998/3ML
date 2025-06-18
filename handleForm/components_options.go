@@ -23,6 +23,12 @@ func AddOptions(proj *Project, iac *Terraform, casc *Ansible, docker *Docker, ci
 }
 
 // Terraform options
+// TODO split the provider and version into separate fields
+//
+//	curl -s https://registry.terraform.io/v1/providers/hashicorp/azurerm | jq -r '.version'
+//	curl -s https://registry.terraform.io/v1/providers/hashicorp/google | jq -r '.version'
+//	curl -s https://registry.terraform.io/v1/providers/hashicorp/aws | jq -r '.version'
+//	curl -s https://registry.terraform.io/v1/providers/digitalocean/digitalocean | jq -r '.version'
 func (iac *Terraform) RunForm() error {
 	if iac.Enabled {
 		provider_form := huh.NewForm(
@@ -74,7 +80,7 @@ func (docker *Docker) RunForm() error {
 	if !docker.Enabled {
 		return nil
 	}
-	// TODO Implement Dockerfile logic
+	// TODO Implement Dockerfile creation logic
 	provider_form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewConfirm().Title("Is there a need for compose file").Value(&docker.ComposeEnabled),
