@@ -80,7 +80,6 @@ func (docker *Docker) RunForm() error {
 	if !docker.Enabled {
 		return nil
 	}
-	// TODO Implement Dockerfile creation logic
 	provider_form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewConfirm().Title("Is there a need for compose file").Value(&docker.ComposeEnabled),
