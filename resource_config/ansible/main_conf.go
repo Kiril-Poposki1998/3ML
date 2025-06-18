@@ -6,7 +6,7 @@ var Main = `
   hosts: "{{ .host }}"
 
   tasks:
-    {{- .DockerTasks }
+    {{- .DockerTasks }}
     - name: Update APT cache
       become: yes
       ansible.builtin.apt:
