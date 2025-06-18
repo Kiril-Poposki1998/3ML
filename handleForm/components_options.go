@@ -33,7 +33,7 @@ func (iac *Terraform) RunForm() error {
 					huh.NewOption("Azure", "Azure"),
 					huh.NewOption("Digital Ocean", "Digital Ocean"),
 				),
-				huh.NewInput().Title("Provider version").Value(&iac.ProviderVersion),
+				huh.NewInput().Title("Provider version").Value(&iac.ProviderVersion).Placeholder("e.g. '~> 3.0.0'"),
 			),
 		)
 		return provider_form.Run()
@@ -48,7 +48,7 @@ func (casc *Ansible) RunForm() error {
 			huh.NewGroup(
 				huh.NewInput().Title("Add a host").Value(&casc.HostName),
 				huh.NewInput().Title("Add an IP addr").Value(&casc.IPaddr),
-				huh.NewInput().Title("Add a SSH pub key").Value(&casc.SSHKey),
+				huh.NewInput().Title("Add a SSH private key").Value(&casc.SSHKey).Placeholder("id_rsa"),
 				huh.NewInput().Title("Add a SSH user").Value(&casc.SSHUser),
 			),
 		)

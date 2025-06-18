@@ -15,7 +15,6 @@ type FormRunner interface {
 	RunForm(proj *Project, iac *Terraform, casc *Ansible, docker *Docker, cicd *CICD) error
 }
 
-// TODO: Create multiple choise for the form runner
 func (r *TerminalFormRunner) RunForm(proj *Project, iac *Terraform, casc *Ansible, docker *Docker, cicd *CICD) error {
 	var tools_used []string
 	form := huh.NewForm(
