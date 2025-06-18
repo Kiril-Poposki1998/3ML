@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup ssh
-        run: mkdir -p ~/.ssh/ && echo "{{"${{"}} secrets.SSH_CONFIG {{"}}"}}" > ~/.ssh/config && echo "{{"${{"}} secrets.SSH_RUNNER_KEY {{"}}"}}" > ~/.ssh/runner_key && chmod 600 ~/.ssh/runner_key && ssh-keyscan -H {{ .IPAddress }} >> ~/.ssh/known_hosts
+        run: mkdir -p ~/.ssh/ && echo "{{"${{"}} secrets.SSH_CONFIG {{"}}"}}" > ~/.ssh/config && echo "{{"${{"}} secrets.SSH_RUNNER_KEY {{"}}"}}" > ~/.ssh/runner_key && chmod 600 ~/.ssh/runner_key && ssh-keyscan -H "{{"${{"}} env.IPaddress {{"}}"}}" >> ~/.ssh/known_hosts
 
       - name: Install rsync
         run: sudo apt-get update && sudo apt-get install rsync -y
