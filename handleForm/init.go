@@ -1,6 +1,7 @@
 package handleform
 
 import (
+	"errors"
 	"strconv"
 
 	"github.com/charmbracelet/huh"
@@ -14,20 +15,43 @@ type FormRunner interface {
 	RunForm(proj *Project, iac *Terraform, casc *Ansible, docker *Docker, cicd *CICD) error
 }
 
+// TODO: Create multiple choise for the form runner
 func (r *TerminalFormRunner) RunForm(proj *Project, iac *Terraform, casc *Ansible, docker *Docker, cicd *CICD) error {
+	var tools_used []string
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().Value(&proj.Name).Title("Name of the project"),
 			huh.NewInput().Value(&proj.Path).Placeholder(proj.Path).Title("Add project path"),
 		),
 		huh.NewGroup(
-			huh.NewConfirm().Value(&iac.Enabled).Title("Do you want to use Terraform?"),
-			huh.NewConfirm().Value(&casc.Enabled).Title("Do you want to use Ansible?"),
-			huh.NewConfirm().Value(&docker.Enabled).Title("Do you want to use Docker?"),
-			huh.NewConfirm().Title("Is there a need for CI/CD?").Value(&cicd.Enabled),
+			huh.NewMultiSelect[string]().Title("Select tools to use").Options(
+				huh.NewOption("Ansible", "ansible"),
+				huh.NewOption("Terraform", "terraform"),
+				huh.NewOption("Docker", "docker"),
+				huh.NewOption("CICD", "cicd"),
+			).Value(&tools_used),
 		),
 	)
-	return form.Run()
+	err := form.Run()
+	if err != nil {
+		return err
+	}
+	// Set the project name and path
+	for _, tool := range tools_used {
+		switch tool {
+		case "ansible":
+			casc.Enabled = true
+		case "terraform":
+			iac.Enabled = true
+		case "docker":
+			docker.Enabled = true
+		case "cicd":
+			cicd.Enabled = true
+		default:
+			return errors.New("unknown tool selected: " + tool)
+		}
+	}
+	return nil
 }
 
 // CreateForm initializes the project and add basic options
