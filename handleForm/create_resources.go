@@ -166,6 +166,9 @@ func (iac Terraform) Create(proj Project) error {
 
 // Create dockerfile, dockerfile.dev and docker compose if needed
 func (d Docker) Create(proj Project) error {
+	if !d.Enabled {
+		return nil
+	}
 	dockercompose_template, err := template.New("docker_compose").Parse(docker.DockerCompose)
 	if err != nil {
 		return fmt.Errorf("failed to parse docker compose template: %w", err)
