@@ -66,7 +66,8 @@ var Main = `
     {{- .DockerCronJobs -}}
 `
 
-var DockerCronJobs = `- name: Delete docker images
+var DockerCronJobs = `
+    - name: Delete docker images
       become: yes
       cron:
         name: "remove_images"
@@ -86,7 +87,8 @@ var DockerCronJobs = `- name: Delete docker images
         state: present
 `
 
-var AnsibleDocker = `- name: Check if docker is installed
+var AnsibleDocker = `
+    - name: Check if docker is installed
       stat:
         path: /bin/docker
       register: docker_result
