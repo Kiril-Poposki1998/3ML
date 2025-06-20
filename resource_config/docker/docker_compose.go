@@ -28,7 +28,7 @@ var PostgresqlDockerCompose = `
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "127.0.1:5432:5432"
+      - "127.0.0.1:5432:5432"
     restart: on-failure
 
 volumes:
@@ -44,7 +44,7 @@ var MysqlDockerCompose = `
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
-	  - "127.0.1:3306:3306"
+	  - "127.0.0.1:3306:3306"
 	restart: on-failure
 
 volumes:
