@@ -75,7 +75,7 @@ func TestCreateForm_Success(t *testing.T) {
 	if proj.Path != "/mock/path" {
 		t.Errorf("unexpected project values: %+v", proj)
 	}
-	if !casc.Enabled || docker.Enabled != true || iac.Enabled != false {
+	if !casc.Enabled || !docker.Enabled || iac.Enabled {
 		t.Errorf("unexpected service values: casc=%v, iac=%v, docker=%v", casc.Enabled, iac.Enabled, docker.Enabled)
 	}
 }
