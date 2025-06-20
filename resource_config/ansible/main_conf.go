@@ -20,6 +20,11 @@ var Main = `
           - python3-certbot-nginx
           - curl
 
+    - name: Create folder in home directory based on project name
+      become: yes
+      file:
+        path: "/home/{{ .SSHUser }}/{{ .host }}"
+
     - name: Copy nginx setting
       become: yes
       copy:
