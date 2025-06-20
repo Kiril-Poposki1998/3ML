@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -289,8 +290,9 @@ func build_ansible_yaml(main *template.Template, casc Ansible, docker_tasks stri
 
 func build_terraform_tf(main template.Template, iac Terraform, provider_source string, additional_info string) (string, error) {
 	var buf bytes.Buffer
+	var provider_name string = strings.Split(provider_source, "/")[1]
 	err := main.Execute(&buf, map[string]string{
-		"provider_name":    iac.Provider,
+		"provider_name":    provider_name,
 		"remote_repo":      provider_source,
 		"provider_version": iac.ProviderVersion,
 		"additional_info":  additional_info,
