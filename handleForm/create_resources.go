@@ -136,22 +136,22 @@ func (iac Terraform) Create(proj Project) error {
 			return err
 		}
 		if iac.Provider == "Digital Ocean" {
-			out, err = build_terraform_tf(*main, "digitalocean/digitalocean", "digitalocean", iac.ProviderVersion, terraform.DO_Additional)
+			out, err = build_terraform_tf(*main, iac, "digitalocean/digitalocean", terraform.DO_Additional)
 			if err != nil {
 				return err
 			}
 		} else if iac.Provider == "AWS" {
-			out, err = build_terraform_tf(*main, "hashicorp/aws", "aws", iac.ProviderVersion, terraform.AWS_Additional)
+			out, err = build_terraform_tf(*main, iac, "hashicorp/aws", terraform.AWS_Additional)
 			if err != nil {
 				return err
 			}
 		} else if iac.Provider == "Azure" {
-			out, err = build_terraform_tf(*main, "hashicorp/azurerm", "azurerm", iac.ProviderVersion, terraform.Azure_Additional)
+			out, err = build_terraform_tf(*main, iac, "hashicorp/azurerm", terraform.Azure_Additional)
 			if err != nil {
 				return err
 			}
 		} else if iac.Provider == "GCP" {
-			out, err = build_terraform_tf(*main, "hashicorp/google", "google", iac.ProviderVersion, terraform.GCP_additional)
+			out, err = build_terraform_tf(*main, iac, "hashicorp/google", terraform.GCP_additional)
 			if err != nil {
 				return err
 			}
@@ -176,7 +176,7 @@ func (d Docker) Create(proj Project) error {
 	}
 
 	// Run docker compose template
-	dockerComposeContent, err := build_dockerfile(dockercompose_template, d.DatabaseEnabled, d.Databasetype)
+	dockerComposeContent, err := build_dockerfile(dockercompose_template, d)
 	if err != nil {
 		return fmt.Errorf("failed to build docker compose file: %w", err)
 	}
@@ -205,7 +205,7 @@ func (cicd CICD) Create(proj Project, casc Ansible) error {
 		}
 
 		// Build the content of the GitHub Actions workflow file
-		out, err := build_github_workflow(main, proj.Name, casc.HostName, casc.IPaddr)
+		out, err := build_github_workflow(main, proj.Name, casc.HostName)
 		if err != nil {
 			return fmt.Errorf("failed to build GitHub Actions workflow: %w", err)
 		}
@@ -219,7 +219,7 @@ func (cicd CICD) Create(proj Project, casc Ansible) error {
 	return nil
 }
 
-func build_github_workflow(main *template.Template, projectName string, sshName string, ipAddress string) (string, error) {
+func build_github_workflow(main *template.Template, projectName string, sshName string) (string, error) {
 	var buf bytes.Buffer
 	err := main.Execute(&buf, map[string]string{
 		"ProjectName": projectName,
@@ -231,11 +231,11 @@ func build_github_workflow(main *template.Template, projectName string, sshName 
 	return buf.String(), nil
 }
 
-func build_dockerfile(main *template.Template, databaseEnabled bool, databaseType string) (string, error) {
+func build_dockerfile(main *template.Template, docker_component Docker) (string, error) {
 	var buf bytes.Buffer
 	err := main.Execute(&buf, map[string]interface{}{
-		"DatabaseEnabled": databaseEnabled,
-		"Databasetype":    databaseType,
+		"DatabaseEnabled": docker_component.DatabaseEnabled,
+		"Databasetype":    docker_component.Databasetype,
 		"Postgresql":      docker.PostgresqlDockerCompose,
 		"Mysql":           docker.MysqlDockerCompose,
 	})
@@ -260,12 +260,12 @@ func build_ansible_yaml(main *template.Template, casc Ansible, docker_tasks stri
 	return buf.String(), nil
 }
 
-func build_terraform_tf(main template.Template, provider_source string, provider_name string, version string, additional_info string) (string, error) {
+func build_terraform_tf(main template.Template, iac Terraform, provider_source string, additional_info string) (string, error) {
 	var buf bytes.Buffer
 	err := main.Execute(&buf, map[string]string{
-		"provider_name":    provider_name,
+		"provider_name":    iac.Provider,
 		"remote_repo":      provider_source,
-		"provider_version": version,
+		"provider_version": iac.ProviderVersion,
 		"additional_info":  additional_info,
 	})
 	if err != nil {
