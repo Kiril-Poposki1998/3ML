@@ -127,6 +127,21 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 				return fmt.Errorf("failed to write check_disk_space.sh: %w", err)
 			}
 		}
+		// Create the SSH config file
+		sshConfig, err := build_ssh_config(casc)
+		if err != nil {
+			return fmt.Errorf("failed to build SSH config: %w", err)
+		}
+		home, _ := os.UserHomeDir()
+		f, err := os.OpenFile(home+"/.ssh/config", os.O_APPEND|os.O_WRONLY, 0644)
+		if err != nil {
+			return fmt.Errorf("failed to open SSH config file: %w", err)
+		}
+		defer f.Close()
+		_, err = f.WriteString(sshConfig)
+		if err != nil {
+			return fmt.Errorf("failed to write SSH config: %w", err)
+		}
 	}
 	return nil
 }
@@ -283,6 +298,29 @@ func build_terraform_tf(main template.Template, iac Terraform, provider_source s
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to execute main template: %w", err)
+	}
+	return buf.String(), nil
+}
+
+func build_ssh_config(casc Ansible) (string, error) {
+	var buf bytes.Buffer
+	sshConfigTemplate := `Host {{.HostName}}
+	HostName {{.IPaddr}}
+	User {{.SSHUser}}
+	IdentityFile ~/.ssh/{{.SSHKey}}
+`
+	tmpl, err := template.New("ssh_config").Parse(sshConfigTemplate)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse ssh config template: %w", err)
+	}
+	err = tmpl.Execute(&buf, map[string]string{
+		"HostName": casc.HostName,
+		"IPaddr":   casc.IPaddr,
+		"SSHUser":  casc.SSHUser,
+		"SSHKey":   casc.SSHKey,
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to execute ssh config template: %w", err)
 	}
 	return buf.String(), nil
 }
