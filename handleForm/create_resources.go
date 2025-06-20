@@ -27,7 +27,6 @@ func (p Project) Create() error {
 }
 
 // Create the necessary files and directories for ansible
-// TODO: Write host confiruation in ~/.ssh/config
 func (casc Ansible) Create(proj Project, docker Docker) error {
 	if casc.Enabled {
 		// Create Ansible directory structure
