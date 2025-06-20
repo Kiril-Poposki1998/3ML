@@ -1,7 +1,9 @@
 package handleform
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/charmbracelet/huh"
 )
@@ -23,12 +25,6 @@ func AddOptions(proj *Project, iac *Terraform, casc *Ansible, docker *Docker, ci
 }
 
 // Terraform options
-// TODO split the provider and version into separate fields
-//
-//	curl -s https://registry.terraform.io/v1/providers/hashicorp/azurerm | jq -r '.version'
-//	curl -s https://registry.terraform.io/v1/providers/hashicorp/google | jq -r '.version'
-//	curl -s https://registry.terraform.io/v1/providers/hashicorp/aws | jq -r '.version'
-//	curl -s https://registry.terraform.io/v1/providers/digitalocean/digitalocean | jq -r '.version'
 func (iac *Terraform) RunForm() error {
 	if iac.Enabled {
 		provider_form := huh.NewForm(
@@ -39,10 +35,22 @@ func (iac *Terraform) RunForm() error {
 					huh.NewOption("Azure", "Azure"),
 					huh.NewOption("Digital Ocean", "Digital Ocean"),
 				),
-				huh.NewInput().Title("Provider version").Value(&iac.ProviderVersion).Placeholder("e.g. '~> 3.0.0'"),
 			),
 		)
-		return provider_form.Run()
+		err := provider_form.Run()
+		if err != nil {
+			return fmt.Errorf("failed to run Terraform form: %w", err)
+		}
+		version_placeholder, err := FetchVersionPlaceholder(iac.Provider)
+		if err != nil {
+			return fmt.Errorf("failed to fetch version placeholder: %w", err)
+		}
+		version_form := huh.NewForm(
+			huh.NewGroup(
+				huh.NewInput().Title("Add a provider version").Value(&iac.ProviderVersion).Placeholder(version_placeholder),
+			),
+		)
+		return version_form.Run()
 	}
 	return nil
 }
@@ -145,4 +153,36 @@ func FormatAdvancedOptionsVars(casc Ansible, iac Terraform, docker Docker, cicd 
 		advancedOptions += fmt.Sprintf("CICD enabled: %t\n", cicd.Enabled)
 	}
 	return advancedOptions
+}
+
+func FetchVersionPlaceholder(provider string) (string, error) {
+	switch provider {
+	case "AWS":
+		return fmt.Sprintf("Currrent version is %s", FetchandDecodeVersion("https://registry.terraform.io/v1/providers/hashicorp/aws")), nil
+	case "GCP":
+		return fmt.Sprintf("Currrent version is %s", FetchandDecodeVersion("https://registry.terraform.io/v1/providers/hashicorp/google")), nil
+	case "Azure":
+		return fmt.Sprintf("Currrent version is %s", FetchandDecodeVersion("https://registry.terraform.io/v1/providers/hashicorp/azurerm")), nil
+	case "Digital Ocean":
+		return fmt.Sprintf("Currrent version is %s", FetchandDecodeVersion("https://registry.terraform.io/v1/providers/digitalocean/digitalocean")), nil
+	default:
+		return "eg. 3.5.0", nil // Default placeholder if provider is not recognized
+	}
+}
+
+func FetchandDecodeVersion(url string) string {
+	client := &http.Client{}
+	resp, err := client.Get(url)
+	if err != nil {
+		return "Cannot fetch provider version use eg. 3.5.0"
+	}
+	defer resp.Body.Close()
+
+	var data struct {
+		Version string `json:"version"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+		return "Cannot decode provider version use eg. 3.5.0"
+	}
+	return data.Version
 }
