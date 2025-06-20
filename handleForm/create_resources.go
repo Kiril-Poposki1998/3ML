@@ -27,6 +27,7 @@ func (p Project) Create() error {
 }
 
 // Create the necessary files and directories for ansible
+// TODO: Write host confiruation in ~/.ssh/config
 func (casc Ansible) Create(proj Project, docker Docker) error {
 	if casc.Enabled {
 		// Create Ansible directory structure
@@ -115,6 +116,17 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 		if err != nil {
 			return fmt.Errorf("failed to write nginx template file: %w", err)
 		}
+		// Write alert files if alerts are enabled
+		if casc.AlertsEnabled {
+			err := os.WriteFile(proj.Path+"/infrastructure/ansible/templates/check_port.sh", []byte(ansible.CheckPortScript), 0755)
+			if err != nil {
+				return fmt.Errorf("failed to write check_port.sh: %w", err)
+			}
+			err = os.WriteFile(proj.Path+"/infrastructure/ansible/templates/check_disk_space.sh", []byte(ansible.CheckDiskSpaceScript), 0755)
+			if err != nil {
+				return fmt.Errorf("failed to write check_disk_space.sh: %w", err)
+			}
+		}
 	}
 	return nil
 }
@@ -166,6 +178,7 @@ func (iac Terraform) Create(proj Project) error {
 
 // Create dockerfile, dockerfile.dev and docker compose if needed
 // TODO Implement Dockerfile creation logic
+// TODO Add default .env file creation
 func (d Docker) Create(proj Project) error {
 	if !d.Enabled {
 		return nil
@@ -256,10 +269,6 @@ func build_ansible_yaml(main *template.Template, casc Ansible, docker_tasks stri
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to execute main template: %w", err)
-	}
-	if casc.AlertsEnabled {
-		os.WriteFile(project_path+"/infrastructure/ansible/check_port.sh", []byte(ansible.CheckPortScript), 0755)
-		os.WriteFile(project_path+"/infrastructure/ansible/check_disk_space.sh", []byte(ansible.CheckDiskSpaceScript), 0755)
 	}
 	return buf.String(), nil
 }
