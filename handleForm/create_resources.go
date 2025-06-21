@@ -134,7 +134,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 		}
 		home, _ := os.UserHomeDir()
 		os.MkdirAll(home+"/.ssh", 0700)
-		f, err := os.OpenFile(home+"/.ssh/config", os.O_APPEND|os.O_WRONLY, 0644)
+		f, err := os.OpenFile(home+"/.ssh/config", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
 			return fmt.Errorf("failed to open SSH config file: %w", err)
 		}
