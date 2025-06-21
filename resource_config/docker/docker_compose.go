@@ -50,3 +50,11 @@ var MysqlDockerCompose = `
 volumes:
   mysql_data:
 `
+
+var DockerComposeEnv = `# Environment variables for Docker Compose
+COMPOSE_PROJECT_NAME="{{.ProjectName}}"
+COMPOSE_FILE="docker-compose.yml"
+COMPOSE_DOCKER_CLI_BUILD=1
+COMPOSE_REMOVE_ORPHANS=1
+COMPOSE_PROFILE="dev"
+`

@@ -133,6 +133,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 			return fmt.Errorf("failed to build SSH config: %w", err)
 		}
 		home, _ := os.UserHomeDir()
+		os.MkdirAll(home+"/.ssh", 0700)
 		f, err := os.OpenFile(home+"/.ssh/config", os.O_APPEND|os.O_WRONLY, 0644)
 		if err != nil {
 			return fmt.Errorf("failed to open SSH config file: %w", err)
@@ -193,7 +194,6 @@ func (iac Terraform) Create(proj Project) error {
 
 // Create dockerfile, dockerfile.dev and docker compose if needed
 // TODO Implement Dockerfile creation logic
-// TODO Add default .env file creation
 func (d Docker) Create(proj Project) error {
 	if !d.Enabled {
 		return nil
@@ -213,6 +213,12 @@ func (d Docker) Create(proj Project) error {
 	err = os.WriteFile(proj.Path+"/docker-compose.yaml", []byte(dockerComposeContent), 0600)
 	if err != nil {
 		return err
+	}
+
+	// Create .env file
+	err = os.WriteFile(proj.Path+"/.env", []byte(docker.DockerComposeEnv), 0600)
+	if err != nil {
+		return fmt.Errorf("failed to write .env file: %w", err)
 	}
 	return nil
 }
