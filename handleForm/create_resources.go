@@ -224,31 +224,33 @@ func (d Docker) Create(proj Project) error {
 }
 
 // Create CI/CD files
+// TODO create CI/CD for ansible deployment
 func (cicd CICD) Create(proj Project, casc Ansible) error {
-	if cicd.Enabled {
-		// Create the .github/workflows directory
-		err := os.MkdirAll(proj.Path+"/.github/workflows", 0700)
-		if err != nil {
-			return fmt.Errorf("failed to create .github/workflows directory: %w", err)
-		}
+	if !cicd.Enabled {
+		return nil
+	}
+	// Create the .github/workflows directory
+	err := os.MkdirAll(proj.Path+"/.github/workflows", 0700)
+	if err != nil {
+		return fmt.Errorf("failed to create .github/workflows directory: %w", err)
+	}
 
-		// Get the main template
-		main, err := template.New("main").Parse(github.Template)
-		if err != nil {
-			return fmt.Errorf("failed to parse main template: %w", err)
-		}
+	// Get the main template
+	main, err := template.New("main").Parse(github.Template)
+	if err != nil {
+		return fmt.Errorf("failed to parse main template: %w", err)
+	}
 
-		// Build the content of the GitHub Actions workflow file
-		out, err := build_github_workflow(main, proj.Name, casc.HostName)
-		if err != nil {
-			return fmt.Errorf("failed to build GitHub Actions workflow: %w", err)
-		}
+	// Build the content of the GitHub Actions workflow file
+	out, err := build_github_workflow(main, proj.Name, casc.HostName)
+	if err != nil {
+		return fmt.Errorf("failed to build GitHub Actions workflow: %w", err)
+	}
 
-		// Write the workflow file
-		err = os.WriteFile(proj.Path+"/.github/workflows/deploy.yaml", []byte(out), 0600)
-		if err != nil {
-			return fmt.Errorf("failed to write deploy.yaml: %w", err)
-		}
+	// Write the workflow file
+	err = os.WriteFile(proj.Path+"/.github/workflows/deploy.yaml", []byte(out), 0600)
+	if err != nil {
+		return fmt.Errorf("failed to write deploy.yaml: %w", err)
 	}
 	return nil
 }
