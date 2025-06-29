@@ -193,7 +193,6 @@ func (iac Terraform) Create(proj Project) error {
 }
 
 // Create dockerfile, dockerfile.dev and docker compose if needed
-// TODO Implement Dockerfile creation logic
 func (d Docker) Create(proj Project) error {
 	if !d.Enabled {
 		return nil
@@ -220,11 +219,26 @@ func (d Docker) Create(proj Project) error {
 	if err != nil {
 		return fmt.Errorf("failed to write .env file: %w", err)
 	}
+
+	// Create the Dockerfile if enabled
+	if d.DockerfileEnabled {
+		switch d.DockerfileType {
+		case "Python":
+			_ = os.WriteFile(proj.Path+"/Dockerfile", []byte(docker.PythonDockerfile), 0600)
+		case "Node.js":
+			_ = os.WriteFile(proj.Path+"/Dockerfile", []byte(docker.NodeDockerfile), 0600)
+		case "Go":
+			_ = os.WriteFile(proj.Path+"/Dockerfile", []byte(docker.GolangDockerfile), 0600)
+		case "Java":
+			_ = os.WriteFile(proj.Path+"/Dockerfile", []byte(docker.JavaDockerfile), 0600)
+		default:
+			return fmt.Errorf("unknown Dockerfile type: %s", d.DockerfileType)
+		}
+	}
 	return nil
 }
 
 // Create CI/CD files
-// TODO create CI/CD for ansible deployment
 func (cicd CICD) Create(proj Project, casc Ansible) error {
 	if !cicd.Enabled {
 		return nil

@@ -43,10 +43,12 @@ type Terraform struct {
 
 // Docker represents the containerization configuration for the project.
 type Docker struct {
-	Enabled         bool
-	ComposeEnabled  bool
-	DatabaseEnabled bool
-	Databasetype    string
+	Enabled           bool
+	ComposeEnabled    bool
+	DatabaseEnabled   bool
+	DockerfileEnabled bool
+	DockerfileType    string
+	Databasetype      string
 }
 
 type CICD struct {

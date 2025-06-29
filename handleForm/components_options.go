@@ -91,34 +91,47 @@ func (docker *Docker) RunForm() error {
 	provider_form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewConfirm().Title("Is there a need for compose file").Value(&docker.ComposeEnabled),
+			huh.NewConfirm().Title("Is there a need for Dockerfile").Value(&docker.DockerfileEnabled),
 		),
 	)
 	provider_form.Run()
 
 	// Form for database options
-	if !docker.ComposeEnabled {
-		return nil
+	if docker.ComposeEnabled {
+		provider_form = huh.NewForm(
+			huh.NewGroup(
+				huh.NewConfirm().Title("Is there a need for a database").Value(&docker.DatabaseEnabled),
+			),
+		)
+		provider_form.Run()
 	}
-	provider_form = huh.NewForm(
-		huh.NewGroup(
-			huh.NewConfirm().Title("Is there a need for a database").Value(&docker.DatabaseEnabled),
-		),
-	)
-	provider_form.Run()
 
 	// Form for which database to use
-	if !docker.DatabaseEnabled {
-		return nil
-	}
-	provider_form = huh.NewForm(
-		huh.NewGroup(
-			huh.NewSelect[string]().Title("Select a database type").Value(&docker.Databasetype).Options(
-				huh.NewOption("PostgreSQL", "PostgreSQL"),
-				huh.NewOption("MySQL", "MySQL"),
+	if docker.DatabaseEnabled {
+		provider_form = huh.NewForm(
+			huh.NewGroup(
+				huh.NewSelect[string]().Title("Select a database type").Value(&docker.Databasetype).Options(
+					huh.NewOption("PostgreSQL", "PostgreSQL"),
+					huh.NewOption("MySQL", "MySQL"),
+				),
 			),
-		),
-	)
-	provider_form.Run()
+		)
+		provider_form.Run()
+	}
+	// Form for Dockerfile options
+	if docker.DockerfileEnabled {
+		dockerfile_form := huh.NewForm(
+			huh.NewGroup(
+				huh.NewSelect[string]().Title("Select a Dockerfile type").Value(&docker.DockerfileType).Options(
+					huh.NewOption("Python", "Python"),
+					huh.NewOption("Node.js", "Node.js"),
+					huh.NewOption("Go", "Go"),
+					huh.NewOption("Java", "Java"),
+				),
+			),
+		)
+		dockerfile_form.Run()
+	}
 	return nil
 }
 
