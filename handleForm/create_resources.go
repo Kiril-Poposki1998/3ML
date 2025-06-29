@@ -252,6 +252,26 @@ func (cicd CICD) Create(proj Project, casc Ansible) error {
 	if err != nil {
 		return fmt.Errorf("failed to write deploy.yaml: %w", err)
 	}
+
+	// Write workflow for ansible
+	if casc.Enabled {
+		t, err := template.New("ansible_workflow").Parse(github.AnsibleTemplate)
+		if err != nil {
+			return fmt.Errorf("failed to parse ansible workflow template: %w", err)
+		}
+		var buf bytes.Buffer
+		err = t.Execute(&buf, map[string]string{
+			"ProjectName": proj.Name,
+			"IPaddress":   casc.IPaddr,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to execute ansible workflow template: %w", err)
+		}
+		err = os.WriteFile(proj.Path+"/.github/workflows/ansible_deploy.yaml", buf.Bytes(), 0600)
+		if err != nil {
+			return fmt.Errorf("failed to write ansible_deploy.yaml: %w", err)
+		}
+	}
 	return nil
 }
 
