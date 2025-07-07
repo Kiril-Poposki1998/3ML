@@ -7,8 +7,8 @@ on:
   push:
     branches:
       - main
-  paths:
-    - 'infrastructure/ansible/**'
+    paths:
+      - 'infrastructure/ansible/**'
 
 jobs:
   deploy_ansible:

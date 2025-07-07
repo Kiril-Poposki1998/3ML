@@ -209,13 +209,24 @@ func (d Docker) Create(proj Project) error {
 	}
 
 	// Create docker compose file
-	err = os.WriteFile(proj.Path+"/docker-compose.yaml", []byte(dockerComposeContent), 0600)
+	err = os.WriteFile(proj.Path+"/docker-compose-dev.yaml", []byte(dockerComposeContent), 0600)
 	if err != nil {
 		return err
 	}
 
-	// Create .env file
-	err = os.WriteFile(proj.Path+"/.env", []byte(docker.DockerComposeEnv), 0600)
+	// Create .env file with template
+	env_template, err := template.New("docker_env").Parse(docker.DockerComposeEnv)
+	var buf bytes.Buffer
+	if err != nil {
+		return fmt.Errorf("failed to parse env template: %w", err)
+	}
+	err = env_template.Execute(&buf, map[string]interface{}{
+		"ProjectName": proj.Name,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to execute env template: %w", err)
+	}
+	err = os.WriteFile(proj.Path+"/.env", buf.Bytes(), 0600)
 	if err != nil {
 		return fmt.Errorf("failed to write .env file: %w", err)
 	}
