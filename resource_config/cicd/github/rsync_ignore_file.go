@@ -6,5 +6,6 @@ var RsyncIgnore = `
 .gitignore
 infrastructure/
 docker-compose-dev.yaml
-Dockerfile.dev
+**/Dockerfile.dev
+.env
 `
