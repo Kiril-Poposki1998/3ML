@@ -52,7 +52,8 @@ type Docker struct {
 }
 
 type CICD struct {
-	Enabled bool
+	Enabled                    bool
+	DiscordNotificationEnabled bool
 }
 
 // Project constructor

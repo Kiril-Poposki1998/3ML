@@ -18,9 +18,9 @@ func AddOptions(proj *Project, iac *Terraform, casc *Ansible, docker *Docker, ci
 	if docker.RunForm() != nil {
 		panic("Docker form failed to run")
 	}
-	// if cicd.RunForm() != nil {
-	// 	panic("CICD form failed to run")
-	// }
+	if cicd.RunForm() != nil {
+		panic("CICD form failed to run")
+	}
 	// fmt.Println(FormatAdvancedOptionsVars(*casc, *iac, *docker))
 }
 
@@ -136,17 +136,17 @@ func (docker *Docker) RunForm() error {
 }
 
 // CI/CD options
-// func (cicd *CICD) RunForm() error {
-// 	if cicd.Enabled {
-// 		provider_form := huh.NewForm(
-// 			huh.NewGroup(
-// 				huh.NewConfirm().Title("Is there a need for CI/CD?").Value(&cicd.Enabled),
-// 			),
-// 		)
-// 		return provider_form.Run()
-// 	}
-// 	return nil
-// }
+func (cicd *CICD) RunForm() error {
+	if cicd.Enabled {
+		provider_form := huh.NewForm(
+			huh.NewGroup(
+				huh.NewConfirm().Title("Is there a need for Discord notification?").Value(&cicd.DiscordNotificationEnabled),
+			),
+		)
+		return provider_form.Run()
+	}
+	return nil
+}
 
 func FormatAdvancedOptionsVars(casc Ansible, iac Terraform, docker Docker, cicd CICD) string {
 	advancedOptions := "Advanced Options:\n"

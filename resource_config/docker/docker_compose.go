@@ -3,15 +3,23 @@ package docker
 var DockerCompose = `
 services:
   app1:	
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     container_name: app1
     env_file:
       - .env
     ports:
       - "127.0.0.1:8000:8000"
     restart: always
-    profiles:
-      - dev
+    develop:
+      watch:
+      - actions: rebuild
+        paths:
+          - ""
+      - actions: sync+restart
+        paths:
+          - ""
 	{{- if .DatabaseEnabled -}}
 		{{- if eq .Databasetype "PostgreSQL" -}}
 		 	{{- .Postgresql -}}

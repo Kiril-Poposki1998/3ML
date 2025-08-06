@@ -30,7 +30,7 @@ jobs:
             cd infrastructure/ansible
             ansible-playbook --private-key ~/.ssh/runner_key main.yaml
 
-
+  {{ if .DiscordNotifyEnabled }}
   notify:
     runs-on: ubuntu-latest
     needs: deploy_ansible
@@ -43,4 +43,5 @@ jobs:
           DISCORD_WEBHOOK: {{ "${{" }} secrets.DISCORD_WEBHOOK_URL {{ "}}" }}
         with:
           args: "STATUS:{{"${{"}} needs.deploy.result {{"}}"}} Actions for project {{"${{"}} github.repository {{"}}"}} on branch main"
+  {{ end }}
 `

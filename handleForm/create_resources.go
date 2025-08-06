@@ -163,22 +163,23 @@ func (iac Terraform) Create(proj Project) error {
 		if err != nil {
 			return err
 		}
-		if iac.Provider == "Digital Ocean" {
+		switch iac.Provider {
+		case "Digital Ocean":
 			out, err = build_terraform_tf(*main, iac, "digitalocean/digitalocean", terraform.DO_Additional)
 			if err != nil {
 				return err
 			}
-		} else if iac.Provider == "AWS" {
+		case "AWS":
 			out, err = build_terraform_tf(*main, iac, "hashicorp/aws", terraform.AWS_Additional)
 			if err != nil {
 				return err
 			}
-		} else if iac.Provider == "Azure" {
+		case "Azure":
 			out, err = build_terraform_tf(*main, iac, "hashicorp/azurerm", terraform.Azure_Additional)
 			if err != nil {
 				return err
 			}
-		} else if iac.Provider == "GCP" {
+		case "GCP":
 			out, err = build_terraform_tf(*main, iac, "hashicorp/google", terraform.GCP_additional)
 			if err != nil {
 				return err
@@ -235,13 +236,13 @@ func (d Docker) Create(proj Project) error {
 	if d.DockerfileEnabled {
 		switch d.DockerfileType {
 		case "Python":
-			_ = os.WriteFile(proj.Path+"/Dockerfile", []byte(docker.PythonDockerfile), 0600)
+			_ = os.WriteFile(proj.Path+"/Dockerfile.dev", []byte(docker.PythonDockerfile), 0600)
 		case "Node.js":
-			_ = os.WriteFile(proj.Path+"/Dockerfile", []byte(docker.NodeDockerfile), 0600)
+			_ = os.WriteFile(proj.Path+"/Dockerfile.dev", []byte(docker.NodeDockerfile), 0600)
 		case "Go":
-			_ = os.WriteFile(proj.Path+"/Dockerfile", []byte(docker.GolangDockerfile), 0600)
+			_ = os.WriteFile(proj.Path+"/Dockerfile.dev", []byte(docker.GolangDockerfile), 0600)
 		case "Java":
-			_ = os.WriteFile(proj.Path+"/Dockerfile", []byte(docker.JavaDockerfile), 0600)
+			_ = os.WriteFile(proj.Path+"/Dockerfile.dev", []byte(docker.JavaDockerfile), 0600)
 		default:
 			return fmt.Errorf("unknown Dockerfile type: %s", d.DockerfileType)
 		}
@@ -250,6 +251,7 @@ func (d Docker) Create(proj Project) error {
 }
 
 // Create CI/CD files
+// TODO Add .rsync-ignore file
 func (cicd CICD) Create(proj Project, casc Ansible) error {
 	if !cicd.Enabled {
 		return nil
@@ -267,7 +269,7 @@ func (cicd CICD) Create(proj Project, casc Ansible) error {
 	}
 
 	// Build the content of the GitHub Actions workflow file
-	out, err := build_github_workflow(main, proj.Name, casc.HostName)
+	out, err := build_github_workflow(main, proj.Name, casc.HostName, cicd.DiscordNotificationEnabled)
 	if err != nil {
 		return fmt.Errorf("failed to build GitHub Actions workflow: %w", err)
 	}
@@ -285,9 +287,10 @@ func (cicd CICD) Create(proj Project, casc Ansible) error {
 			return fmt.Errorf("failed to parse ansible workflow template: %w", err)
 		}
 		var buf bytes.Buffer
-		err = t.Execute(&buf, map[string]string{
-			"ProjectName": proj.Name,
-			"IPaddress":   casc.IPaddr,
+		err = t.Execute(&buf, map[string]interface{}{
+			"ProjectName":          proj.Name,
+			"IPaddress":            casc.IPaddr,
+			"DiscordNotifyEnabled": cicd.DiscordNotificationEnabled,
 		})
 		if err != nil {
 			return fmt.Errorf("failed to execute ansible workflow template: %w", err)
@@ -300,11 +303,12 @@ func (cicd CICD) Create(proj Project, casc Ansible) error {
 	return nil
 }
 
-func build_github_workflow(main *template.Template, projectName string, sshName string) (string, error) {
+func build_github_workflow(main *template.Template, projectName string, sshName string, DiscordNotifyEnabled bool) (string, error) {
 	var buf bytes.Buffer
-	err := main.Execute(&buf, map[string]string{
-		"ProjectName": projectName,
-		"SSHName":     sshName,
+	err := main.Execute(&buf, map[string]interface{}{
+		"ProjectName":          projectName,
+		"SSHName":              sshName,
+		"DiscordNotifyEnabled": DiscordNotifyEnabled,
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to execute main template: %w", err)
