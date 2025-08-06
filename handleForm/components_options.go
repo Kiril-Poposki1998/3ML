@@ -64,20 +64,12 @@ func (casc *Ansible) RunForm() error {
 				huh.NewInput().Title("Add an IP addr").Value(&casc.IPaddr),
 				huh.NewInput().Title("Add a SSH private key").Value(&casc.SSHKey).Placeholder("id_rsa"),
 				huh.NewInput().Title("Add a SSH user").Value(&casc.SSHUser),
+				huh.NewConfirm().Title("Enable alerts?").Value(&casc.AlertsEnabled),
 			),
 		)
 		err := provider_form.Run()
 		if err != nil {
 			return fmt.Errorf("failed to run Ansible form: %w", err)
-		}
-		alerts_form := huh.NewForm(
-			huh.NewGroup(
-				huh.NewConfirm().Title("Enable alerts?").Value(&casc.AlertsEnabled),
-			),
-		)
-		err = alerts_form.Run()
-		if err != nil {
-			return fmt.Errorf("failed to run alerts form: %w", err)
 		}
 	}
 	return nil
