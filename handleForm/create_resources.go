@@ -300,6 +300,11 @@ func (cicd CICD) Create(proj Project, casc Ansible) error {
 			return fmt.Errorf("failed to write ansible_deploy.yaml: %w", err)
 		}
 	}
+	// Add rsync ignore file
+	err = os.WriteFile(proj.Path+"/.rsync_ignore", []byte(github.RsyncIgnore), 0600)
+	if err != nil {
+		return fmt.Errorf("failed to write .rsync_ignore file: %w", err)
+	}
 	return nil
 }
 
