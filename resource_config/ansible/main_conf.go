@@ -7,6 +7,17 @@ var Main = `
 
   tasks:
     {{- .DockerTasks }}
+    - name: Add NGINX signing key
+      ansible.builtin.apt_key:
+        url: https://nginx.org/keys/nginx_signing.key
+        state: present
+
+    - name: Add NGINX apt repository
+      ansible.builtin.apt_repository:
+        repo: "deb http://nginx.org/packages/ubuntu jammy nginx"
+        state: present
+        filename: nginx
+
     - name: Update APT cache
       become: yes
       ansible.builtin.apt:
