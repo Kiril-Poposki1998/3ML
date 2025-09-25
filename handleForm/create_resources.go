@@ -185,7 +185,7 @@ func (iac Terraform) Create(proj Project) error {
 				return err
 			}
 		}
-		err = os.WriteFile(iac_path+"main.tf", []byte(out), 0644)
+		err = os.WriteFile(iac_path+"main.tf", []byte(out), 0666)
 		if err != nil {
 			return err
 		}
