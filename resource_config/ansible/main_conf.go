@@ -34,13 +34,17 @@ var Main = `
     - name: Create folder in home directory based on project name
       become: yes
       file:
+        state: directory
+        mode: '0744'
+        owner: "{{ .SSHUser }}"
+        group: "{{ .SSHUser }}"
         path: "/home/{{ .SSHUser }}/{{ .host }}"
 
     - name: Copy nginx setting
       become: yes
       copy:
         src: ./templates/template.conf
-        dest: /etc/nginx/sites-enabled/template.conf
+        dest: /etc/nginx/conf.d/template.conf
         owner: root
         group: root
       register: temp_nginx_confg
@@ -55,7 +59,7 @@ var Main = `
       service:
         name: nginx
         state: restarted
-      when: api_conf.changed or wp_conf.changed
+      when: temp_nginx_confg.changed
 
     - name: Renewing certificates
       become: yes
