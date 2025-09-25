@@ -19,7 +19,7 @@ func (p Project) Create() error {
 		return err
 	}
 	if p.InfraEnabled {
-		err = os.MkdirAll(p.Path+"/infrastructure", os.ModePerm)
+		err = os.MkdirAll(p.Path+"/infrastructure", 0744)
 		if err != nil {
 			return err
 		}
