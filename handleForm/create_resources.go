@@ -52,7 +52,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 			}
 
 			// Write main.yaml to the project directory
-			err = os.WriteFile(casc_path+"main.yaml", []byte(out), 0744)
+			err = os.WriteFile(casc_path+"main.yaml", []byte(out), 0644)
 			if err != nil {
 				return fmt.Errorf("failed to write main.yaml: %w", err)
 			}
@@ -63,7 +63,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 			if err != nil {
 				return fmt.Errorf("failed to build ansible yaml: %w", err)
 			}
-			err = os.WriteFile(casc_path+"main.yaml", []byte(out), 0744)
+			err = os.WriteFile(casc_path+"main.yaml", []byte(out), 0644)
 			if err != nil {
 				return fmt.Errorf("failed to write main.yaml: %w", err)
 			}
@@ -82,7 +82,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 		if err != nil {
 			return fmt.Errorf("failed to execute ansible configuration template: %w", err)
 		}
-		err = os.WriteFile(casc_path+"ansible.cfg", buf.Bytes(), 0744)
+		err = os.WriteFile(casc_path+"ansible.cfg", buf.Bytes(), 0644)
 		if err != nil {
 			return fmt.Errorf("failed to write ansible.cfg: %w", err)
 		}
@@ -101,7 +101,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 		if err != nil {
 			return fmt.Errorf("failed to execute ansible hosts template: %w", err)
 		}
-		err = os.WriteFile(casc_path+"hosts", hostsBuf.Bytes(), 0744)
+		err = os.WriteFile(casc_path+"hosts", hostsBuf.Bytes(), 0644)
 		if err != nil {
 			return fmt.Errorf("failed to write hosts file: %w", err)
 		}
