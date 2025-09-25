@@ -32,6 +32,10 @@ resource "digitalocean_droplet" "web" {
     hour    = 8
   }
 }
+
+output "IP" {
+  value = digitalocean_droplet.web.ipv4_address
+}
 `
 
 var AWS_Additional = `
@@ -46,6 +50,10 @@ resource "aws_ec2_host" "web" {
   availability_zone = "us-west-2a"
   host_recovery     = "on"
   auto_placement    = "on"
+}
+
+output "IP" {
+  value = aws_ec2_host.web.id
 }
 `
 
@@ -87,5 +95,9 @@ resource "google_compute_instance" "web" {
     access_config {
     }
   }
+}
+
+output "IP" {
+  value = google_compute_instance.web.network_interface[0].access_config[0].nat_ip
 }
 `
