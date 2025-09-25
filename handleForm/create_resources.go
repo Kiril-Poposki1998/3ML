@@ -152,7 +152,7 @@ func (iac Terraform) Create(proj Project) error {
 	if iac.Enabled {
 		// Create Terraform directory structure
 		var iac_path = proj.Path + "/infrastructure/terraform/"
-		err := os.MkdirAll(iac_path, 0744)
+		err := os.MkdirAll(iac_path, 0644)
 		if err != nil {
 			return err
 		}
