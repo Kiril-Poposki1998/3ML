@@ -32,7 +32,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 	if casc.Enabled {
 		// Create Ansible directory structure
 		var casc_path = proj.Path + "/infrastructure/ansible/"
-		err := os.MkdirAll(casc_path, 0755)
+		err := os.MkdirAll(casc_path, 0744)
 		if err != nil {
 			return err
 		}
@@ -52,7 +52,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 			}
 
 			// Write main.yaml to the project directory
-			err = os.WriteFile(casc_path+"main.yaml", []byte(out), 0755)
+			err = os.WriteFile(casc_path+"main.yaml", []byte(out), 0744)
 			if err != nil {
 				return fmt.Errorf("failed to write main.yaml: %w", err)
 			}
@@ -63,7 +63,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 			if err != nil {
 				return fmt.Errorf("failed to build ansible yaml: %w", err)
 			}
-			err = os.WriteFile(casc_path+"main.yaml", []byte(out), 0755)
+			err = os.WriteFile(casc_path+"main.yaml", []byte(out), 0744)
 			if err != nil {
 				return fmt.Errorf("failed to write main.yaml: %w", err)
 			}
@@ -82,7 +82,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 		if err != nil {
 			return fmt.Errorf("failed to execute ansible configuration template: %w", err)
 		}
-		err = os.WriteFile(casc_path+"ansible.cfg", buf.Bytes(), 0755)
+		err = os.WriteFile(casc_path+"ansible.cfg", buf.Bytes(), 0744)
 		if err != nil {
 			return fmt.Errorf("failed to write ansible.cfg: %w", err)
 		}
@@ -101,7 +101,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 		if err != nil {
 			return fmt.Errorf("failed to execute ansible hosts template: %w", err)
 		}
-		err = os.WriteFile(casc_path+"hosts", hostsBuf.Bytes(), 0755)
+		err = os.WriteFile(casc_path+"hosts", hostsBuf.Bytes(), 0744)
 		if err != nil {
 			return fmt.Errorf("failed to write hosts file: %w", err)
 		}
@@ -112,7 +112,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 			return fmt.Errorf("failed to create templates directory: %w", err)
 		}
 		// Copy the nginx template file
-		err = os.WriteFile(casc_path+"templates/template.conf", []byte(ansible.AnsibleNginxTemplate), 0755)
+		err = os.WriteFile(casc_path+"templates/template.conf", []byte(ansible.AnsibleNginxTemplate), 0644)
 		if err != nil {
 			return fmt.Errorf("failed to write nginx template file: %w", err)
 		}
