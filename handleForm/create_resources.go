@@ -194,7 +194,6 @@ func (iac Terraform) Create(proj Project) error {
 }
 
 // Create dockerfile, dockerfile.dev and docker compose if needed
-// TODO Add number of applications in docker compose dev file and their names
 func (d Docker) Create(proj Project) error {
 	if !d.Enabled {
 		return nil
