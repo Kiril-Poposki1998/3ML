@@ -68,8 +68,20 @@ func (casc *Ansible) RunForm() error {
 	if casc.Enabled {
 		provider_form := huh.NewForm(
 			huh.NewGroup(
-				huh.NewInput().Title("Add a host").Value(&casc.HostName),
-				huh.NewInput().Title("Add an IP addr").Value(&casc.IPaddr),
+				huh.NewInput().Title("Add a host").Value(&casc.HostName).Validate(func(v string) error {
+					if v == "" {
+						return fmt.Errorf("host name is required")
+					}
+					return nil
+				}),
+				huh.NewInput().Title("Add an IP addr").Value(&casc.IPaddr).Validate(func(v string) error {
+					if v == "" {
+						return fmt.Errorf("IP address is required")
+					} else if !regexp.MustCompile(`^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$`).MatchString(v) {
+						return fmt.Errorf("invalid IP address format")
+					}
+					return nil
+				}),
 				huh.NewInput().Title("Add a SSH private key").Value(&casc.SSHKey).Placeholder("id_rsa"),
 				huh.NewInput().Title("Add a SSH user").Value(&casc.SSHUser),
 				huh.NewConfirm().Title("Enable alerts?").Value(&casc.AlertsEnabled),
