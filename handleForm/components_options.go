@@ -51,7 +51,7 @@ func (iac *Terraform) RunForm() error {
 				huh.NewInput().Title("Add a provider version").Value(&iac.ProviderVersion).Placeholder(version_placeholder).Validate(func(v string) error {
 					if v == "" {
 						return fmt.Errorf("provider version is required")
-					} else if regexp.MustCompile(`^\d+\.\d+\.\d+$`).MatchString(v) == false {
+					} else if !regexp.MustCompile(`^\d+\.\d+\.\d+$`).MatchString(v) {
 						return fmt.Errorf("provider version must be in the format X.Y.Z")
 					}
 					return nil
