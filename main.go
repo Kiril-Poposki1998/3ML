@@ -2,6 +2,8 @@ package main
 
 import (
 	handleform "3ML/handleForm"
+	"fmt"
+	"os"
 )
 
 var (
@@ -19,6 +21,14 @@ func check(err error) {
 }
 
 func main() {
+	// Check for commands
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "run":
+			fmt.Println("Run command has been selected")
+			os.Exit(0)
+		}
+	}
 	// Create project form
 	runner := &handleform.TerminalFormRunner{}
 	proj, err := handleform.SetupProject()
