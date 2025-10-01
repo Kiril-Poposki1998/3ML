@@ -1,8 +1,8 @@
 package main
 
 import (
+	"3ML/commands"
 	handleform "3ML/handleForm"
-	"fmt"
 	"os"
 )
 
@@ -22,10 +22,16 @@ func check(err error) {
 
 func main() {
 	// Check for commands
-	if len(os.Args) > 1 {
-		switch os.Args[1] {
-		case "run":
-			fmt.Println("Run command has been selected")
+	if len(os.Args) == 2 {
+		commands.Run()
+		os.Exit(0)
+	} else if len(os.Args) > 1 {
+		switch os.Args[2] {
+		case "--only-terraform":
+			commands.TerraformRun()
+			os.Exit(0)
+		case "--only-ansible":
+			commands.AnsibleRun()
 			os.Exit(0)
 		}
 	}
