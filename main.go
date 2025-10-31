@@ -22,10 +22,10 @@ func check(err error) {
 
 func main() {
 	// Check for commands
-	if len(os.Args) == 2 {
+	if len(os.Args) == 2 && os.Args[1] == "run" {
 		commands.Run()
 		os.Exit(0)
-	} else if len(os.Args) > 1 {
+	} else if len(os.Args) > 1 && os.Args[1] == "run" {
 		switch os.Args[2] {
 		case "--only-terraform":
 			commands.TerraformRun()
