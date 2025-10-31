@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
+
+	"gopkg.in/yaml.v2"
 )
 
 func check(err error) {
@@ -14,7 +17,13 @@ func check(err error) {
 	}
 }
 
-func TerraformRun() {
+type Inventory struct {
+	All struct {
+		Hosts map[string]interface{} `yaml:"hosts"`
+	} `yaml:"all"`
+}
+
+func TerraformRun() string {
 	// execute terraform apply command
 	_ = os.Chdir("./infrastructure/terraform")
 
@@ -51,14 +60,53 @@ func TerraformRun() {
 	if err := cmd.Wait(); err != nil {
 		check(err)
 	}
+
+	// Capture the IP address from Terraform output
+	cmd = exec.Command("terraform", "output", "-raw", "IP")
+	output, err := cmd.Output()
+	check(err)
+
+	ipAddress := strings.TrimSpace(string(output))
+	fmt.Printf("Captured IP address: %s\n", ipAddress)
 	fmt.Println("Terraform apply completed successfully.")
+
+	return ipAddress
+}
+
+func updateAnsibleInventory(ipAddress string) {
+	// Path to the Ansible inventory.yaml file
+	inventoryFilePath := "../../infrastructure/ansible/inventory.yaml"
+
+	// Read the existing inventory.yaml file
+	file, err := os.ReadFile(inventoryFilePath)
+	check(err)
+
+	var inventory Inventory
+	err = yaml.Unmarshal(file, &inventory)
+	check(err)
+
+	// Update the hosts with the new IP address
+	if inventory.All.Hosts == nil {
+		inventory.All.Hosts = make(map[string]interface{})
+	}
+	inventory.All.Hosts["new_host"] = map[string]string{
+		"ansible_host": ipAddress,
+	}
+
+	// Write the updated inventory back to the file
+	updatedInventory, err := yaml.Marshal(&inventory)
+	check(err)
+
+	err = os.WriteFile(inventoryFilePath, updatedInventory, 0644)
+	check(err)
+
+	fmt.Printf("Updated inventory.yaml with IP address %s.\n", ipAddress)
 }
 
 func AnsibleRun() {
-	// Placeholder for future implementation
 	_ = os.Chdir("../../infrastructure/ansible")
 
-	cmd := exec.Command("ansible-playbook", "-i", "hosts", "main.yaml")
+	cmd := exec.Command("ansible-playbook", "-i", "inventory.yaml", "main.yaml")
 	stderr, err := cmd.StderrPipe()
 	check(err)
 
@@ -86,7 +134,8 @@ func dockerRun() {
 }
 
 func Run() {
-	TerraformRun()
+	ipaddr := TerraformRun()
+	updateAnsibleInventory(ipaddr)
 	AnsibleRun()
 	syncRun()
 	dockerRun()

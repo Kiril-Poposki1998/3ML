@@ -3,7 +3,7 @@ package ansible
 var Main = `
 ---
 - name: Setup VM
-  hosts: "{{ .host }}"
+  hosts: all
 
   tasks:
     {{- .DockerTasks }}

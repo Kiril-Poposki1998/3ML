@@ -101,7 +101,7 @@ func (casc Ansible) Create(proj Project, docker Docker) error {
 		if err != nil {
 			return fmt.Errorf("failed to execute ansible hosts template: %w", err)
 		}
-		err = os.WriteFile(casc_path+"hosts", hostsBuf.Bytes(), 0644)
+		err = os.WriteFile(casc_path+"inventory.yaml", hostsBuf.Bytes(), 0644)
 		if err != nil {
 			return fmt.Errorf("failed to write hosts file: %w", err)
 		}

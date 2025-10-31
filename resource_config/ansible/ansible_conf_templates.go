@@ -6,8 +6,10 @@ remote_user = {{ .user }}
 private_key_file = ~/.ssh/{{ .private_key_file }}
 `
 
-var AnsiblHosts = `[{{ .host }}]
-{{ .host }} ansible_host={{ .ip }} ansible_connection=ssh
+var AnsiblHosts = `all:
+  vm:
+    ansible_host: {{ .ip }}
+    ansible_connection: ssh
 `
 
 var AnsibleNginxTemplate = `server {
