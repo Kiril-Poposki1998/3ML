@@ -19,7 +19,18 @@ func (r *TerminalFormRunner) RunForm(proj *Project, iac *Terraform, casc *Ansibl
 	var tools_used []string
 	form := huh.NewForm(
 		huh.NewGroup(
-			huh.NewInput().Value(&proj.Name).Title("Name of the project"),
+			huh.NewInput().Value(&proj.Name).Title("Name of the project").Validate(func(s string) error {
+				// Project needs to be lowercase, without spaces and only letters, numbers, hyphens and underscores
+				if s == "" {
+					return errors.New("project name cannot be empty")
+				}
+				for _, char := range s {
+					if !(char >= 'a' && char <= 'z') && !(char >= '0' && char <= '9') && char != '-' && char != '_' {
+						return errors.New("project name can only contain lowercase letters, numbers, hyphens and underscores")
+					}
+				}
+				return nil
+			}),
 			huh.NewInput().Value(&proj.Path).Placeholder(proj.Path).Title("Add project path"),
 		),
 		huh.NewGroup(
