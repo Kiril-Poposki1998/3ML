@@ -14,12 +14,13 @@ services:
     restart: always
     develop:
       watch:
-      - actions: rebuild
-        paths:
+      - action: rebuild
+        path: "./"
+        ignore:
           - ""
-      - actions: sync+restart
-        paths:
-          - ""
+      - action: sync+restart
+        path: "./"
+        target: ""
 	{{- if .DatabaseEnabled -}}
 		{{- if eq .Databasetype "PostgreSQL" -}}
 		 	{{- .Postgresql -}}
@@ -63,7 +64,7 @@ volumes:
 
 var DockerComposeEnv = `# Environment variables for Docker Compose
 COMPOSE_PROJECT_NAME="{{.ProjectName}}"
-COMPOSE_FILE="docker-compose-dev.yml"
+COMPOSE_FILE="docker-compose-dev.yaml"
 COMPOSE_DOCKER_CLI_BUILD=1
 COMPOSE_REMOVE_ORPHANS=1
 COMPOSE_PROFILE="dev"
